@@ -71,8 +71,9 @@ evidence/tooling, Git metadata and local build artifacts. Keep those exclusions.
 API tokens stay in ignored `.env.local`, not in the Vercel application runtime.
 
 The production deploy-key workflow below is an alternative for future automatic
-GitHub deployments; it has not been configured. First GitHub push still requires
-Nabo's approval.
+GitHub deployments; it has not been configured. Nabo approved the first public
+GitHub push on 2026-11-20; normal hackathon pushes to main are now authorized
+within AGENTS.md's boundaries.
 
 ### Optional GitHub-connected workflow
 

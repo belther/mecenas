@@ -1,6 +1,6 @@
 # Day 1 — 2026-11-20, America/Sao_Paulo
 
-Author: Codex. Status: public first page and Convex verified; GitHub push pending.
+Author: Codex. Status: public first page and Convex verified; GitHub publication authorized.
 Canonical requirements: SPEC.md and Nabo's launch request, 2026-11-20.
 
 ## Implemented
@@ -30,8 +30,10 @@ Canonical requirements: SPEC.md and Nabo's launch request, 2026-11-20.
 
 ## External status and next steps
 
-- GitHub first push: not authorized yet. Repository is public; first push would
-  publish this source/spec. No service secrets or real customer records included.
+- GitHub first push: Nabo approved on 2026-11-20 after reviewing the public page.
+  Destination: public `belther/mecenas`, branch main. No service secrets or real
+  customer records included. Committed source was checked against configured
+  keys before publication: zero matches, no local credential/evidence files tracked.
 - Vercel: https://mecenas-azure.vercel.app (also mecenas-vamo-ve.vercel.app).
   First deployment READY; public login protection disabled with Nabo's explicit
   approval on 2026-11-20. Browser verified the public page and `Convex conectado`.
