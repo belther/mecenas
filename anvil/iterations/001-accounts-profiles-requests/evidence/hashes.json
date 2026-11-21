@@ -1,0 +1,10 @@
+{
+  "raw_evidence": "ignored local files, not published",
+  "sha256": {
+    "local-evidence/probe-worker-boundary.py": "daba70e11b555f6fee65994643be0a805f7c02dc5d3da07e70e1f598958b9f72",
+    "local-evidence/iteration-001-boundary/invocation.json": "6da32f76d6276c62dc4f33e3851f95f0827d79a877f3a349dde64fab2902b293",
+    "local-evidence/iteration-001-boundary/events.jsonl": "cca19614e1ce1330c1c6a3fbc3a8f2a12e132f0c9dc720482db85c6a9f24923c",
+    "local-evidence/iteration-001-boundary/inventory-invocation.json": "4a837a5257a7332f1db6fc777a67e9d2efcc56e59b8f496bf0f5987d2c007347",
+    "local-evidence/iteration-001-boundary/inventory-events.jsonl": "3e8b1460329225248e5e67676caa85beb6a9546eda1b263ecb3f6314d1e333f6"
+  }
+}
