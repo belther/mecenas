@@ -1,7 +1,9 @@
 # Iteration 001 evidence
 
-Status: implemented and verified locally against the development backend;
-production deployment and owner acceptance remain pending. Updated 2026-11-21.
+Status: implemented and verified locally against the development backend, then
+published with owner approval on 2026-11-21. Production registration stays closed;
+production test accounts and authenticated production verification remain pending.
+See [release evidence](../../../../docs/deployment-001.md).
 
 Workflow: 0.5.0-hub-dev; fingerprint
 `1f77383f1bcc3237c60aa9b471a1f3ff5b36ff26f26644c223a47ac0ebc2a573`.

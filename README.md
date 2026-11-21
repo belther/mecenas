@@ -11,8 +11,12 @@ If present, `anvil.yaml` and `anvil/` contain development records only.
 
 Iteration 001 adds a Portuguese workspace at `/painel`: synthetic account sign-in,
 artist/client profiles, validated portfolio/reference images, private request
-drafts, publication and artist browsing. It is verified locally against the
-**development** Convex deployment; this slice has not been deployed to production.
+drafts, publication and artist browsing. It was verified locally against the
+**development** Convex deployment, then published with Nabo's approval on
+2026-11-21: https://mecenas-azure.vercel.app/painel . Production health, public
+page access and anonymous-denial checks pass. Registration is closed; production
+test accounts have not been provisioned. Authenticated end-to-end flows were
+verified in development, not in production. See [release evidence](docs/deployment-001.md).
 Applications, offers and payments are not implemented yet.
 Without a Convex URL the page explicitly shows local demo mode.
 First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
