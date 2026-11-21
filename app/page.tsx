@@ -11,7 +11,7 @@ export default function Home() {
         <article><span className="number">02</span><h3>Combine antes de criar</h3><p>A proposta aceita vem antes do trabalho. O fluxo previsto inclui Pix de teste e duas revisões.</p></article>
         <article><span className="number">03</span><h3>Aprove e receba</h3><p>Prévia com marca d’água, imagens do processo e licença de uso. A entrega final vem após a aprovação.</p></article>
       </div></section>
-      <aside className="notice"><strong>Primeiros traços, por enquanto.</strong><p>Esta é a primeira versão do Mecenas. Cadastro, encomendas e pagamentos ainda não estão disponíveis. A demo usará somente dados sintéticos e pagamentos simulados.</p></aside>
+      <aside className="notice"><strong>O ateliê já está aberto para testes.</strong><p>A primeira etapa inclui perfis, portfólio e publicação de encomendas de ilustração. O acesso às contas de teste é restrito. Use apenas dados fictícios; candidaturas e pagamentos ainda não estão disponíveis.</p><a className="button" href="/painel">Abrir o ateliê <span aria-hidden="true">↗</span></a></aside>
     </main>
   </>;
 }
