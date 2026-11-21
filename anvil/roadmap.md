@@ -5,7 +5,7 @@ See [product](product.md) for scope and durable decisions and [SPEC §10](../SPE
 | Iteration | Slice | Status |
 | --- | --- | --- |
 | [000](../docs/day-1.md) ✅ | Existing foundation: Next.js + Convex, first public page, project rules and sandbox payment-design investigation. | Delivered before Anvil; evidence adopted. Video/initial-draft submission still pending. |
-| 001 | Accounts, artist profile/portfolio and client requests with example images; illustration artType and per-artist price. | Next: prepare specification; authentication choice and execution prerequisites unresolved. |
+| [001](iterations/001-accounts-profiles-requests/review.html) | Accounts, artist profile/portfolio and client requests with example images; illustration artType and per-artist price. | Next: prepare specification; authentication choice and execution prerequisites unresolved. |
 | 002 | Artist applications, client selection, ranked backup queue and accept/decline offers (R1–R4). | Planned. |
 | 003 | Sandbox Pix payment without split, verified webhook and commission funds-held state (R5; §6 fallback). | Planned. |
 | 004 | Watermarked preview, process images, two revisions, approval, simulated release, full download and licence (R6/R7/R10). | Planned. |
