@@ -103,6 +103,33 @@ transaction/payout fees. The docs deduct payout fees from the recipient amount.
 Who absorbs those fees to preserve the promised artist price needs a decision
 before a production design; no fee policy is changed by this verification.
 
+### Sandbox execution follow-up — 2026-11-20, 22:20 Brasília
+
+This updates the earlier missing-account blocker; accounts and sandbox key are
+now supplied by Nabo. No real money, withdrawals or transfers were used.
+
+- Subaccount creation, balance read, creation of a synthetic R$100 Pix charge
+  with a R$50 split, payment simulation and subsequent balance read all returned
+  HTTP 200 with sandbox resources (`devMode=true`).
+- The first full-refund request returned HTTP 400 due to insufficient platform
+  balance. A separate R$100 simulated Pix payment without split supplied test
+  balance. An immediate refund attempt still returned 400; a later explicit
+  request succeeded (HTTP 200, `success=true`). No automatic refund retry loop.
+- After that successful refund, the artist subaccount still had **5000 cents
+  available and 0 blocked**. The R$50 split remained credited. This runtime
+  observation agrees with the documented failure of assumption **(b)**.
+- The original failed probe report did not retain its initial/pre-refund balance
+  values. This is a limitation of that report, not a measured before/after delta.
+  The probe now preserves initial and paid balances before requesting a refund.
+- Assumption **(a) remains unverified**: withdrawals exist only in production,
+  so sandbox does not prove exclusive platform control over seller access.
+
+Reviewed local evidence: `local-evidence/abacatepay-1795223846926.json`,
+`local-evidence/refund-check.json`, `local-evidence/refund-funding.json`, and
+`local-evidence/refund-completed.json`. These are ignored account/test records;
+do not publish raw IDs or keys. The split payment is refunded; the separate
+synthetic funding payment remains as test balance. Keep the §6 fallback.
+
 ## 7. Out of scope (hackathon)
 
 Music, physical art, chat, cards/boleto, mobile app, more than one currency, automatic AI detection.

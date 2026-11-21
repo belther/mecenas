@@ -56,6 +56,7 @@ export async function runProbe(env = process.env, fetcher = fetch) {
       return total;
     };
     const before = await balance();
+    report.b.balancesCents = { before };
     const charge = await request("/transparents/create", { method: "PIX", data: {
       amount: 10000, description: "Mecenas sandbox split refund probe", externalId: `mecenas-probe-${crypto.randomUUID()}`,
       splits: [{ subAccountId: sub.id, amount: 5000 }],
@@ -66,6 +67,7 @@ export async function runProbe(env = process.env, fetcher = fetch) {
     report.sandboxSubaccountId = sub.id;
     await request(`/transparents/simulate-payment?id=${encodeURIComponent(charge.id)}`, {});
     const paid = await balance();
+    report.b.balancesCents.paid = paid;
     await request("/transparents/refund", { id: charge.id, reason: "Synthetic sandbox split reversal verification" }, true);
     const refunded = await balance();
     report.b = { ...report.b, result: classifyReversal(before, paid, refunded), balancesCents: { before, paid, refunded }, reason: "Single immediate balance observation; unexpected deltas require follow-up, not a pass." };

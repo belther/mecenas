@@ -12,7 +12,9 @@ If present, `anvil.yaml` and `anvil/` contain development records only.
 Day 1: Portuguese landing page, Next.js TypeScript App Router, Convex health
 query and initial day-2 schema. No account, commission or payment UI yet.
 Without a Convex URL the page explicitly shows local demo mode.
-Deployment and payment execution require Nabo's service accounts and keys.
+First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
+Convex dev and production health queries are connected. The sandbox probe
+confirmed that refunding a split payment leaves the artist's split credited.
 Read [SPEC.md](SPEC.md) for product rules and [AGENTS.md](AGENTS.md) for boundaries.
 
 ## Run locally
@@ -48,6 +50,31 @@ npm run build
 ```
 
 ## Vercel + Convex production
+
+### Current deployment (manual, without GitHub integration)
+
+Nabo authorized a public first demo. The project runs on Vercel Hobby in team
+`vamo-ve`; no GitHub connection is installed. Production Convex:
+`https://peaceful-salmon-164.convex.cloud`. Development Convex:
+`https://successful-fennec-849.convex.cloud`.
+
+The first page was deployed with the Vercel CLI, with only the public production
+Convex URL set in Vercel. Backend code was deployed separately from this checkout
+using Nabo's locally supplied Convex token. Both remote `health:check` queries
+returned `status: ok`; the public page shows `Convex conectado`.
+
+For this manual workflow, deploy backend changes with `npx convex deploy` before
+deploying frontend source with the Vercel CLI. Authenticate through the local
+service tooling or CLI login; never put tokens in command arguments. Vercel uses
+the standard Next.js build. `.vercelignore` excludes environment files, local
+evidence/tooling, Git metadata and local build artifacts. Keep those exclusions.
+API tokens stay in ignored `.env.local`, not in the Vercel application runtime.
+
+The production deploy-key workflow below is an alternative for future automatic
+GitHub deployments; it has not been configured. First GitHub push still requires
+Nabo's approval.
+
+### Optional GitHub-connected workflow
 
 Use Vercel **Hobby** for this personal, noncommercial sandbox demo and Convex
 **Free**, without paid upgrades or pay-as-you-go activation. No custom domain,
@@ -112,6 +139,11 @@ settlement later. No local test proves real payment behavior or licensed escrow.
 
 All money release in the hackathon fallback must be labelled simulation.
 Production needs a licensed escrow provider and separate approval.
+
+Execution checked 2026-11-20: split payment simulation succeeded; refund initially
+failed because platform funds were insufficient. After separate simulated
+funding and settlement, the full refund succeeded while R$50 stayed credited to
+the subaccount. Details and evidence limitations are recorded in SPEC §6.
 
 ## Source provenance
 
