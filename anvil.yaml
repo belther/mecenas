@@ -1,0 +1,13 @@
+schema_version: 1
+workflow:
+  version: 0.5.0-hub-dev
+  fingerprint: 1f77383f1bcc3237c60aa9b471a1f3ff5b36ff26f26644c223a47ac0ebc2a573
+project:
+  name: "Mecenas"
+commands: {}
+isolation:
+  status: unverified
+  evidence: null
+capabilities:
+  network: false
+  paid_operations: false
