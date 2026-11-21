@@ -1,0 +1,39 @@
+{
+  "role": "adversarial",
+  "findings": [
+    {
+      "severity": "medium",
+      "file": "convex/requests.ts:28",
+      "issue": "Publication validates exampleUploadIds, but image URLs come from the separate, unchecked exampleStorageIds array. A malformed persisted draft can expose another owner's private image.",
+      "reproduction": "Added tests/adversarial.test.ts with a T20 fixture: create another client's private upload; seed its storage ID into a draft whose exampleUploadIds is empty; publish; retrieve as an artist. The code permits publication and projects the foreign image. Requires malformed persisted data; no public mutation path to create this mismatch was found. Test execution was blocked.",
+      "recommendation": "Derive published storage IDs from validated upload records atomically, or reject any mismatch before changing status."
+    },
+    {
+      "severity": "medium",
+      "file": "convex/auth.ts:6",
+      "issue": "Unrestricted account registration is exported publicly and offered in the UI, although the specification excludes public unrestricted signup. No invitation or approved-account restriction appears in the packet.",
+      "reproduction": "Call auth.signUpWithUsernamePassword anonymously with a fresh valid synthetic username/password, create a client profile, then save and publish a request. Added this reproduction to tests/adversarial.test.ts; execution was blocked.",
+      "recommendation": "Enforce approved demo-account provisioning or an invitation check on backend registration. Hiding the signup button alone is insufficient."
+    },
+    {
+      "severity": "medium",
+      "file": "app/painel/page.tsx:54",
+      "issue": "The publish button operates independently of the editor's unsaved changes and pending save. It can publish older content and leave the visible editor attempting to edit a request that is now immutable.",
+      "reproduction": "Save a draft, edit its title or amount without saving, then click Publicar encomenda on its card. RequestCard publishes only the persisted ID; the changes remain local. Saving afterward is rejected because the request is open. Also reproducible by delaying save and clicking publish before save commits. Established from source; browser execution was prohibited.",
+      "recommendation": "Share dirty, saving and publishing state between the editor and card. Require saving or explicitly discarding edits before publication, and prevent overlapping save/publish operations."
+    }
+  ],
+  "checks": [
+    "Read spec.md, SPEC.md, initial-design.json, application/backend source and existing tests within the packet.",
+    "Reviewed role immutability, actor-derived ownership, request reads, upload purpose/ownership, image decoding, publication validation and UI pending states.",
+    "Added tests/adversarial.test.ts with focused registration, malformed-publication and authorization cases. Application source was unchanged.",
+    "Attempted the exact authorized Vitest command. Node exited before loading Vitest with EPERM during lstat of C:\\."
+  ],
+  "limitations": [
+    "No tests executed; findings are source-derived with explicit reproduction steps, not verified runtime results.",
+    "Browser authentication, reload, cookie handling and UI behavior were not exercised.",
+    "Windows resolves spec.md and SPEC.md to the same supplied file; a distinct root specification was unavailable within the packet.",
+    "No parent checkout, Git, environment files, credentials, network, collaboration, resource/MCP tools, browsers or connectors were accessed.",
+    "Full all-route isolation remains unverified. No payments or deployments were performed."
+  ]
+}

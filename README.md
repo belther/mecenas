@@ -9,8 +9,11 @@ If present, `anvil.yaml` and `anvil/` contain development records only.
 
 ## Current state
 
-Day 1: Portuguese landing page, Next.js TypeScript App Router, Convex health
-query and initial day-2 schema. No account, commission or payment UI yet.
+Iteration 001 adds a Portuguese workspace at `/painel`: synthetic account sign-in,
+artist/client profiles, validated portfolio/reference images, private request
+drafts, publication and artist browsing. It is verified locally against the
+**development** Convex deployment; this slice has not been deployed to production.
+Applications, offers and payments are not implemented yet.
 Without a Convex URL the page explicitly shows local demo mode.
 First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
 Convex dev and production health queries are connected. The sandbox probe
@@ -42,6 +45,40 @@ Nabo signs in and creates/selects Mecenas in Convex. The CLI writes the dev
 deployment settings to `.env.local` and generates `convex/_generated/`.
 Restart Next.js after environment changes. The footer reports connected only
 when the deployed `health:check` query answers. No private data is exposed.
+
+### Synthetic workspace accounts
+
+Open http://localhost:3000/painel after the development backend is ready.
+Registration is closed by default. In the Convex **development** dashboard,
+Settings → Environment Variables, configure `MECENAS_DEMO_USERNAMES` with a
+comma-separated list of fictional usernames approved for your local test.
+The current development verification uses `cliente-demo` and `artista-demo`;
+test passwords are not saved. For your own run, configure fresh fictional names
+and create those accounts in the local workspace with unique passwords generated
+locally. No passwords are supplied or committed. An allowed username can enroll
+once; this is a limited synthetic demo, not a production invitation system.
+Do not enable production registration without a separate access-policy review.
+
+Choose artist or client once when saving a profile; roles cannot change.
+Artists can then edit their profile to add up to six portfolio images. Clients
+can save a request with up to four references, then publish it for artists.
+Save all edits before publication. Prices are BRL **per artist**, stored as
+integer cents, from R$1.00 to R$1,000,000.00. No payment is initiated.
+
+Images are decoded server-side, limited to JPEG/PNG/WebP, 5 MiB and 20 million
+pixels, rotated/resized to at most 2560 pixels and stored as metadata-free WebP.
+Ownership and purpose are checked before attachment. Unattached valid uploads
+remain in development storage; automatic orphan collection is future work.
+Storage URLs are bearer links: draft queries and preview lookup are owner-only,
+but someone who receives a URL can read it. Use synthetic images exclusively.
+
+Auth uses Convex Auth 2.1.0, HttpOnly refresh cookies and verified live sessions.
+The guarded signup adapter uses a narrow, tested runtime handler compatibility
+seam; auth is pinned and upgrades require rechecking signup/session tests.
+Account recovery, identity verification and real public registration are absent.
+
+See [iteration evidence](anvil/iterations/001-accounts-profiles-requests/evidence/index.md)
+for checks, independent review findings, repairs and verification limits.
 
 ```powershell
 npm test

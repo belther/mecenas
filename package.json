@@ -2,7 +2,9 @@
   "name": "mecenas",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,18 +13,22 @@
     "convex:dev": "convex dev",
     "deploy:build": "convex deploy --cmd \"npm run build\"",
     "payments:probe": "node --env-file-if-exists=.env.local scripts/abacatepay-probe.mjs",
-    "test": "node --test scripts/*.test.mjs"
+    "test": "node --test scripts/*.test.mjs && vitest run"
   },
   "dependencies": {
+    "@convex-dev/auth": "2.1.0",
     "convex": "1.51.0",
     "next": "16.4.6",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5.9"
+    "convex-test": "^0.0.73",
+    "typescript": "^5.9",
+    "vitest": "^5.1.1"
   }
 }

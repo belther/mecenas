@@ -1,0 +1,168 @@
+{
+  "cases": [
+    {
+      "id": "T01",
+      "purpose": "Verify real authentication and session lifecycle.",
+      "setup": "Use a locally configured synthetic account in a browser.",
+      "action": "Sign in correctly, reload, sign out, attempt protected access, then try an invalid password.",
+      "expected": "Valid sign-in survives reload; sign-out removes actor access; invalid credentials produce a useful Portuguese error without credentials or private profile data."
+    },
+    {
+      "id": "T02",
+      "purpose": "Reject anonymous backend access.",
+      "setup": "No authenticated identity; valid synthetic payloads and existing record IDs.",
+      "action": "Directly call profile save, draft save, publish, upload creation, and protected reads, bypassing the UI.",
+      "expected": "Writes and protected data access fail closed; no profile, request, upload ownership, attachment, or publication is created."
+    },
+    {
+      "id": "T03",
+      "purpose": "Persist an artist's own profile.",
+      "setup": "Authenticated artist with valid owned portfolio uploads.",
+      "action": "Save display name, biography, and portfolio; update them; reload and call profiles.me.",
+      "expected": "The same profile ID is updated, and saved fields and attachments persist; publicly visible fields exclude login data and internal identity tokens."
+    },
+    {
+      "id": "T04",
+      "purpose": "Enforce immutable roles and one profile per identity.",
+      "setup": "Separate artist and client identities with saved profiles; another identity without a profile.",
+      "action": "Attempt each role change; submit repeated and concurrent initial profile saves for the new identity.",
+      "expected": "Existing roles remain unchanged; concurrent or repeated saves cannot create multiple profiles for one identity."
+    },
+    {
+      "id": "T05",
+      "purpose": "Prevent cross-account profile writes and identity impersonation.",
+      "setup": "Two artists with distinct profiles and uploads.",
+      "action": "As the second artist, submit the first artist's upload IDs and forged owner or identity fields; read profiles.me afterward.",
+      "expected": "Foreign attachment and impersonation attempts are rejected; the first profile is unchanged; profiles.me returns only the authenticated actor's profile."
+    },
+    {
+      "id": "T06",
+      "purpose": "Validate profile text on the backend.",
+      "setup": "Authenticated artist; otherwise valid profile payloads.",
+      "action": "Test display-name lengths 1, 2, 60, and 61 and biography lengths 0, 1000, and 1001 through direct calls.",
+      "expected": "Names of 2–60 characters and optional biographies up to 1000 characters save; out-of-range values fail without changing the prior profile."
+    },
+    {
+      "id": "T07",
+      "purpose": "Exercise the complete client request lifecycle and persistence.",
+      "setup": "Authenticated client with valid owned reference images.",
+      "action": "Save a valid draft, edit it, inspect mine/get, reload, publish, and reload again.",
+      "expected": "One request retains its ID, edited fields, exact integer cents, slots, and images; artType is illustration; status changes from draft to open only after successful publication."
+    },
+    {
+      "id": "T08",
+      "purpose": "Enforce request role and ownership boundaries.",
+      "setup": "Two clients, one artist, and a draft owned by the first client.",
+      "action": "As the artist, attempt saveDraft and publish; as the second client, attempt edit and publish of the first client's draft, including forged ownership fields.",
+      "expected": "Every unauthorized mutation fails; ownership, fields, attachments, and status remain unchanged."
+    },
+    {
+      "id": "T09",
+      "purpose": "Protect publication transitions.",
+      "setup": "Client owns a valid draft; an artist can browse.",
+      "action": "Observe browsing before and during a delayed publish; complete publish; attempt saveDraft against the published ID.",
+      "expected": "The request is absent until publication commits, then appears as open; the draft endpoint rejects modification of the published request."
+    },
+    {
+      "id": "T10",
+      "purpose": "Restrict request reads and project safe listing fields.",
+      "setup": "Two clients, an artist, one draft, one published request, and a nonexistent ID.",
+      "action": "Exercise mine, browse, and get under each identity; compare private and nonexistent get failures.",
+      "expected": "Clients retrieve their own requests; browse is artist-only; artists receive published approved fields and images; other clients' drafts stay private; private/nonexistent get calls give generic rejection; payloads omit private identity fields and authentication records."
+    },
+    {
+      "id": "T11",
+      "purpose": "Enforce precise money bounds without rounding.",
+      "setup": "Authenticated client; otherwise valid draft payload.",
+      "action": "Submit amounts 99, 100, 101, 100000000, 100000001, zero, negative, fractional, unsafe integer, and a numeric string; attempt nonfinite values where transport permits.",
+      "expected": "Only safe integer cents from 100 through 100000000 save, with exact round-trip values; invalid input is rejected without coercion, rounding, or mutation."
+    },
+    {
+      "id": "T12",
+      "purpose": "Validate request text, slots, and fixed art type.",
+      "setup": "Authenticated client; vary one field per direct call.",
+      "action": "Test trimmed title lengths 4, 5, 120, 121; description lengths 19, 20, 3000, 3001; whitespace-only text; slots 0, 1, 10, 11, fractional and string values; attempt a non-illustration artType.",
+      "expected": "Only valid trimmed text and integer slots 1–10 save; persisted text is trimmed; requests always use illustration; invalid submissions leave prior state unchanged."
+    },
+    {
+      "id": "T13",
+      "purpose": "Accept valid image formats and normalize stored images.",
+      "setup": "Artist and client with valid JPEG, PNG, and WebP fixtures, including metadata and an image requiring resizing.",
+      "action": "Create purpose-appropriate uploads, attach them, and inspect authorized resulting images.",
+      "expected": "All three formats work; validated ownership exists before attachment; output dimensions do not exceed 2560, metadata is stripped, and authorized images remain viewable."
+    },
+    {
+      "id": "T14",
+      "purpose": "Reject malformed images and misleading MIME labels.",
+      "setup": "Authenticated upload owner; synthetic text, SVG, GIF, truncated image, corrupt image, and valid image with a conflicting declared type.",
+      "action": "Submit each through uploads.create while claiming an accepted image type where applicable.",
+      "expected": "Unsupported, corrupt, and undecodable bytes are rejected despite their labels; conflicting labels cannot bypass actual-format validation; rejected files yield no attachable record or exposed URL and are cleaned up where possible."
+    },
+    {
+      "id": "T15",
+      "purpose": "Enforce server-side upload size and decoding bounds.",
+      "setup": "Decodable supported fixtures at and above 5 MiB, at and above 20 million pixels, and a compact file declaring extreme dimensions.",
+      "action": "Upload directly, bypassing browser checks.",
+      "expected": "Otherwise valid fixtures at the documented limits are accepted; oversized or over-pixel-limit inputs are rejected; hostile dimensions fail within bounded processing; accepted output respects the 2560 dimension cap."
+    },
+    {
+      "id": "T16",
+      "purpose": "Enforce upload roles and purposes.",
+      "setup": "Authenticated artist and client; valid supported image bytes.",
+      "action": "Create artist portfolio and client reference uploads; attempt the opposite role-purpose combinations, an unknown purpose, and cross-purpose attachments.",
+      "expected": "Authorized role-purpose flows succeed; wrong-role, invalid-purpose, and cross-purpose use fail without creating unauthorized ownership or attachments."
+    },
+    {
+      "id": "T17",
+      "purpose": "Reject foreign, fabricated, and raw storage references.",
+      "setup": "Two owners with private uploads; obtain synthetic raw storage IDs and an upload ID that does not exist.",
+      "action": "Attempt profile and request attachments using another owner's upload, a raw storage ID, and the nonexistent upload ID.",
+      "expected": "All attempts fail on the backend; no partial attachment or publication occurs, and no foreign file URL is returned."
+    },
+    {
+      "id": "T18",
+      "purpose": "Protect draft images and release only published projections.",
+      "setup": "Client owns a draft with reference images; another client and an artist know its IDs.",
+      "action": "Try retrieving its request and image URLs as each nonowner before publication; publish and retry as the artist.",
+      "expected": "Draft content and image URLs remain owner-only; publication permits artist access to the approved request projection and its images without exposing private upload records."
+    },
+    {
+      "id": "T19",
+      "purpose": "Enforce image limits and uniqueness under concurrency.",
+      "setup": "Artist with seven owned portfolio uploads and client with five owned reference uploads.",
+      "action": "Save six portfolio/four reference images; attempt seven/five; repeat IDs; race saves that could exceed each limit.",
+      "expected": "Exact limits succeed; excess attachments fail; duplicate IDs cannot persist or bypass limits; committed records never exceed six portfolio or four reference images."
+    },
+    {
+      "id": "T20",
+      "purpose": "Validate persisted publication data atomically.",
+      "setup": "A valid draft plus synthetic harness fixtures containing invalid persisted text, money, slots, or foreign/unvalidated attachments.",
+      "action": "Publish each fixture and inspect owner reads and artist browsing after success or rejection.",
+      "expected": "The valid draft opens; each invalid persisted draft is rejected as a whole, remains unpublished, exposes no new image access, and retains its prior record state."
+    },
+    {
+      "id": "T21",
+      "purpose": "Handle pending operations, failures, and retries honestly.",
+      "setup": "Filled profile/request forms; controlled upload, save, and publish failures and delayed responses.",
+      "action": "Submit during delays, repeat submission, force failures, then retry successfully.",
+      "expected": "Portuguese pending and failure states reflect actual outcomes; failed operations are not reported as successful; enough form state remains to retry; retries do not create duplicate profiles or attachments; failed publish never exposes the draft."
+    },
+    {
+      "id": "T22",
+      "purpose": "Verify usable unavailable and empty states within iteration scope.",
+      "setup": "Browser sessions with no saved work, missing backend configuration, and a session-restoration error.",
+      "action": "Open relevant screens and existing public landing page; attempt recovery and revisit saved work after configuration/session recovery.",
+      "expected": "Portuguese empty states are useful; unavailable states explain recovery actions; session errors do not create another profile; the landing page still works with preserved claims; no payment or out-of-scope workflow is invoked."
+    }
+  ],
+  "redStrategy": "Once execution is separately authorized, use the declared Vitest/convex-test boundary with synthetic identities and a contract-compatible no-op baseline whose functions are callable. First run successful profile and draft round trips, asserting returned IDs, changed persisted values, publication visibility, and isolation across actors. A no-op returning undefined, fabricated IDs, empty reads, or success without persistence must fail these assertions. Pair every denial case with a valid control and require an explicit rejection plus unchanged stored state; empty results alone do not prove authorization. Record failures against behavioral assertions. Missing imports, absent modules, configuration failures, and harness startup errors are blocked execution, not meaningful red results. Verify real password/session behavior separately in the browser.",
+  "limitations": [
+    "Design only; no tests, build, typecheck, browser checks, or implementation inspection were performed.",
+    "Only spec.md and interfaces.txt were read through shell tools; no parent files, Git, credentials, network, connectors, resources, or collaboration were accessed.",
+    "The packet specification remains draft and records unverified execution prerequisites. This design does not establish implementation approval or enforced isolation; the user-authorized limited exception covers this design activity.",
+    "Exact safe-projection fields, error codes, decoding resource budgets, and cleanup guarantees are not fully enumerated; assertions must avoid inventing those details.",
+    "The contract does not specify whether a valid image with a conflicting accepted MIME label must be rejected or normalized; actual bytes must govern validation.",
+    "Internal fixture seeding and failure injection need a test-harness adapter; they must not introduce production mutation endpoints or access real data.",
+    "Build/typecheck, credential hygiene, production deployment absence, and absence of payment invocation need separate execution evidence; backend identity injection does not prove real authentication."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "role": "code-review",
+  "findings": [
+    {
+      "severity": "medium",
+      "file": "convex/auth.ts",
+      "issue": "Account creation is unrestricted. The backend exports public signUpWithUsernamePassword, the HTTP proxy permits it, and the interface offers account creation. No invitation or synthetic-account allowlist enforces the specification's exclusion of public unrestricted signup.",
+      "reproduction": "With a configured backend, submit a new valid username/password through the signup mutation without prior authorization. The implementation creates an account; hiding the interface would not restrict the backend endpoint.",
+      "recommendation": "Restrict account provisioning to authorized synthetic identities and enforce that restriction on the backend. Add an explicit rejection test for unauthorized signup."
+    },
+    {
+      "severity": "medium",
+      "file": "convex/requests.ts",
+      "issue": "Publication validates exampleUploadIds but exposes images from the separately persisted exampleStorageIds. It never checks that these arrays correspond. A malformed persisted draft can therefore publish foreign storage references despite valid or empty upload IDs, contrary to AC8 and frozen case T20.",
+      "reproduction": "In the synthetic harness, create a valid draft, then patch exampleUploadIds to [] and exampleStorageIds to another owner's stored image ID. Publish as the draft owner. Validation passes, and an artist's get/browse projection generates the foreign image URL.",
+      "recommendation": "During publication, derive storage IDs from the validated owned upload records and reject any persisted mismatch atomically. Test mismatched, foreign, and missing attachments alongside the existing invalid-money fixture."
+    },
+    {
+      "severity": "medium",
+      "file": "tests/backend.test.ts",
+      "issue": "Material frozen-design checks remain uncovered. T19 tests portfolio counts only, without reference-image limits or concurrency. T20 corrupts only money. T21/T22 have no browser failure/retry or session-restoration checks. T11's valid boundary loop asserts record count rather than exact persisted amounts. These omissions leave important acceptance outcomes unverified.",
+      "reproduction": "Compare the supplied tests with initial-design.json: no concurrent initial profile saves, four/five reference-image cases, persisted foreign-storage publication fixture, or interface failure/retry checks are implemented. The publication mismatch described above is outside the current assertions.",
+      "recommendation": "Complete these targeted frozen cases, including exact persisted-value assertions and unchanged-state checks after denial. Verify real session restoration and interface retries separately from injected backend identities."
+    }
+  ],
+  "checks": [
+    "Inspected the packet specification, frozen initial design, test baseline, application, backend, tests, and relevant explicitly allowed dependency source.",
+    "Checked backend identity derivation, immutable roles, ownership checks, request projections, publication validation, image normalization, and interface pending/error handling.",
+    "Computed SHA-256 hashes: tests/backend.test.ts = 89090568c708f50e1836a776fc72e95fc557db3b8dc5c2a1eaf0ccffb66d7f66; vitest.config.ts = bfde17f5b9722353ee0536c26db8c89ac19e8d3e68346aa929572008efc5d884. Both differ from test-baseline.json.",
+    "Attempted the packet's Vitest suite using the explicitly allowed dependency executable. Node stopped before test loading with EPERM on lstat C:\\.",
+    "Made no application-source changes; invoked no network, payments, deployments, Git, collaboration, browsers, connectors, or resource tools."
+  ],
+  "limitations": [
+    "Findings are source-derived reproductions; runtime tests were blocked by filesystem permissions.",
+    "The baseline contains hashes without original test contents, so changed files are confirmed but specific assertion weakening cannot be established.",
+    "On this Windows filesystem, spec.md and SPEC.md resolve to the same supplied SPEC.md. A distinct root product specification was unavailable within the packet.",
+    "Browser checks, build, typecheck, live authentication, and deployment behavior were not verified.",
+    "Full all-route isolation remains unverified, as stated in the authorized review scope."
+  ]
+}

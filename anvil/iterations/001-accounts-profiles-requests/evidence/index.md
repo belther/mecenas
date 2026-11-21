@@ -1,20 +1,25 @@
-# Iteration evidence
+# Iteration 001 evidence
 
-Workflow: 0.5.0-hub-dev
+Status: implemented and verified locally against the development backend;
+production deployment and owner acceptance remain pending. Updated 2026-11-21.
 
-Workflow fingerprint: `1f77383f1bcc3237c60aa9b471a1f3ff5b36ff26f26644c223a47ac0ebc2a573`
+Workflow: 0.5.0-hub-dev; fingerprint
+`1f77383f1bcc3237c60aa9b471a1f3ff5b36ff26f26644c223a47ac0ebc2a573`.
+Approved specification SHA-256:
+`e22b4f2d6130bf2e9904ba4ade10663c27c0be84adc27625d75ad9311d1a57e8`.
 
-Specification SHA-256: `e22b4f2d6130bf2e9904ba4ade10663c27c0be84adc27625d75ad9311d1a57e8`
+- [Specification](../spec.md), [plan](../plan.md), [owner approval](../approval.md).
+- [Scoped exception approval](../exception-approval.md) and [boundary evidence](boundary-review.md).
+- [Frozen independent design](initial-design.json), [freeze identity](initial-design-freeze.json), [starting test identities](test-baseline.json).
+- [Callable red baseline](red-baseline.test.mjs): three expected behavioral failures.
+- [Verification and test-change review](verification.md).
+- [Initial adversarial findings](adversarial-initial.json), [separate code review](code-review-initial.json).
+- [Recheck 1](code-review-recheck.json), [final recheck](code-review-final-recheck.json).
+- [Final source identities](final-source-manifest.json) and [retrospective](../retrospective.md).
 
-See [specification](../spec.md), [plan](../plan.md) and [review](../review.html).
-
-Approval, execution and verification are recorded separately as evidence becomes available.
-
-- [Owner approval](../approval.md): specification revision 0.1 accepted; Convex Auth selected.
-- [Boundary review](boundary-review.md): shell probes passed; other tool routes unverified.
-- [Proposed scoped exception](../exception-proposal.md): awaiting owner decision; no exception granted.
-- [Raw local evidence identities](hashes.json): raw logs remain ignored and local.
-
-Current execution status: independent test design and pilot implementation have
-not started. The approval is valid; the pinned all-route isolation prerequisite
-is not yet satisfied. anvil.yaml remains isolation: unverified.
+Review source manifests and native usage files sit next to their corresponding
+results. Raw event logs, account records and screenshots stay in ignored
+local-evidence. No application credential was included in a worker packet.
+The original specification/plan's draft-state sentences are historical; the
+approval and exception records establish execution authority. Full isolation
+remains unverified. No Anvil source was copied into this application.

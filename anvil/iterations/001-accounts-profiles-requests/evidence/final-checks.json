@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-21",
+  "timezone": "America/Sao_Paulo",
+  "checks": {
+    "npm test": {
+      "nodeTests": 2,
+      "vitestTests": 19,
+      "failed": 0
+    },
+    "npm run typecheck": "passed",
+    "npm run build": "passed after stopping preview",
+    "Convex development deployment": "successful-fennec-849, ready",
+    "Anvil config validation": "valid; does not verify isolation/approval/execution",
+    "Anvil review check": "matches frozen source/renderer",
+    "final repair review": "no findings, static review only"
+  },
+  "productionDeployed": false,
+  "paymentsInvoked": false,
+  "preview": "stopped after browser verification"
+}

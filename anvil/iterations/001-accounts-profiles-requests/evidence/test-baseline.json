@@ -1,0 +1,8 @@
+{
+  "phase": "before application implementation",
+  "sha256": {
+    "tests/backend.test.ts": "2fc88c8492de1b508aa145cc8b27a53886006674722c1a5135681887df728354",
+    "vitest.config.ts": "4cab8290e6a5d07f056e02641f8d3212f9967dcff14359043ad72ada8d9aff11",
+    "anvil/iterations/001-accounts-profiles-requests/evidence/red-baseline.test.mjs": "34df0c22f098a9f3d92991daf8a39290d14114c14929171b1de197f93ead1554"
+  }
+}

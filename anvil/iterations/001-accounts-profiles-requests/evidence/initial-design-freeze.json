@@ -1,0 +1,16 @@
+{
+  "status": "frozen before implementation",
+  "sha256": "a14c70dfee4203efa339e2c7e8e57f285f7cab272ec1e99eb6c042a3fb23404c",
+  "cases": 22,
+  "requested_model": "gpt-6.1-sol",
+  "reasoning": "medium",
+  "access": "specification/interfaces only; approved limited exception; shell boundary retained",
+  "raw_events_sha256": "3a81557a8a6edbeba1500c69d576586cd3062e77051e1e392bf3ccbbda69b66f",
+  "usage": {
+    "input_tokens": 36289,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 2738,
+    "reasoning_output_tokens": 337
+  }
+}

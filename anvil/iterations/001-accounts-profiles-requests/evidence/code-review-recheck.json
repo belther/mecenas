@@ -1,0 +1,40 @@
+{
+  "role": "repair-recheck",
+  "findings": [
+    {
+      "severity": "medium",
+      "file": "app/painel/page.tsx",
+      "issue": "Publication pending state does not lock the editor. Edits made during publication can be discarded while the older saved version becomes public.",
+      "reproduction": "Open a saved draft, click Publish, then change its title while publication is pending. RequestCard tracks pending locally; RequestForm remains enabled. Successful publication calls newDraft(), discarding the new edit.",
+      "recommendation": "Lift publication pending state into ClientRequests and disable the editor until publication finishes."
+    }
+  ],
+  "checks": [
+    {
+      "repair": 1,
+      "status": "unverified",
+      "detail": "Tests cover empty allowlist and unapproved username rejection without creating users. The signup implementation was not retrieved."
+    },
+    {
+      "repair": 2,
+      "status": "unverified",
+      "detail": "The malformed persisted storage test asserts publication rejection, draft retention and an empty artist listing. The publication implementation was not retrieved."
+    },
+    {
+      "repair": 3,
+      "status": "partially confirmed",
+      "detail": "Dirty forms, pending saves and pending uploads block publication. The reverse pending-publication case remains defective."
+    },
+    {
+      "repair": 4,
+      "status": "confirmed by source inspection",
+      "detail": "Tests include four-reference limits, duplicate references, concurrent initial profile creation, concurrent profile updates, exact integer-cent persistence and malformed persisted storage links."
+    }
+  ],
+  "limitations": [
+    "Two batched reads used. auth.ts and requests.ts were attempted at packet root and were absent; their implementations remain unreviewed.",
+    "No tests or typecheck executed. Successful execution is conductor-reported.",
+    "No edits or prohibited external access performed.",
+    "Full all-route isolation remains unverified."
+  ]
+}

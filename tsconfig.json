@@ -3,6 +3,8 @@
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "types": ["node", "vite/client"],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
