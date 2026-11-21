@@ -66,6 +66,22 @@ Canonical requirements: SPEC.md and Nabo's launch request, 2026-11-20.
   explicitly approved making it public before the setting was changed.
 - No paid plans, custom domains or production financial actions were enabled.
 
+## Initial presentation materials — 2026-11-20
+
+Nabo requested a Portuguese script and a process graphic for his recorded
+introduction, and proposed editing the graphic into the recording. Proposed
+materials: [script and recording notes](video/roteiro-inicial.txt),
+[video-ready graphic](video/fluxo-mecenas.png), and its
+[canonical SVG](video/fluxo-mecenas.svg). The 350-word narration is timed only
+approximately; actual recording duration must be checked before export.
+The graphic is 1920 × 1080, rendered and visually inspected. It labels the
+process as proposed/in development and the demo payout as simulated.
+Original renderer: `scripts/render-video-graphic.mjs`; documented in the script
+notes. It uses installed sharp, writes the local PNG and makes no network calls.
+No video recording has been supplied or edited yet. Existing image-generation
+accounts are optional; no paid generation or new subscription is needed for
+these materials. Vault indexing remains outside this session's writable roots.
+
 ## Remaining decision
 
 Authentication provider is not chosen in the spec. Research current suitable

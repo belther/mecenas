@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Mecenas: da ideia à entrega</title>
+  <desc id="desc">Fluxo proposto, ainda em desenvolvimento. O cliente publica a ideia, artistas se candidatam sem trabalho gratuito, o cliente escolhe, o artista aceita e o cliente paga, o artista cria e revisa, e a aprovação leva ao arquivo final e ao repasse. A demo usará Pix de teste e repasse simulado.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#285747"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#f6f2e9"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#252c26">
+    <text x="88" y="113" font-family="Georgia, serif" font-size="55" font-weight="bold" letter-spacing="-2">mecenas<tspan fill="#285747"> ✳</tspan></text>
+    <rect x="1280" y="61" width="552" height="65" rx="32" fill="#e6ebdf"/>
+    <text x="1556" y="103" text-anchor="middle" fill="#285747" font-size="26">Fluxo proposto · em desenvolvimento</text>
+    <text x="88" y="247" font-family="Georgia, serif" font-size="88" letter-spacing="-2">Da ideia à entrega.</text>
+    <text x="90" y="307" font-size="31" fill="#586158">Você encomenda, o artista recebe.</text>
+    <line x1="88" y1="353" x2="1832" y2="353" stroke="#d1d6c9" stroke-width="2"/>
+
+    <g transform="translate(88 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">1</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Publique</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">a ideia</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Briefing, referências</text><text x="0" y="257" font-size="26" fill="#586158">e valor por artista.</text>
+    </g>
+    <g transform="translate(388 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">2</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Artistas se</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">candidatam</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Sem desenho</text><text x="0" y="257" font-size="26" fill="#586158">de teste gratuito.</text>
+    </g>
+    <g transform="translate(688 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">3</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Escolha</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">o artista</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Proposta e fila</text><text x="0" y="257" font-size="26" fill="#586158">de suplentes.</text>
+    </g>
+    <g transform="translate(988 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">4</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Aceite e</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">pagamento</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Criação só após</text><text x="0" y="257" font-size="26" fill="#586158">pagamento confirmado.</text>
+    </g>
+    <g transform="translate(1288 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">5</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Criação e</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">revisões</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Prévia, processo</text><text x="0" y="257" font-size="26" fill="#586158">e duas revisões.</text>
+    </g>
+    <g transform="translate(1588 415)">
+      <circle cx="29" cy="29" r="29" fill="#285747"/><text x="29" y="39" text-anchor="middle" font-size="26" fill="#fffaf0">6</text>
+      <text x="0" y="116" font-family="Georgia, serif" font-size="36">Aprovação</text><text x="0" y="158" font-family="Georgia, serif" font-size="36">e repasse</text>
+      <text x="0" y="220" font-size="26" fill="#586158">Arquivo final</text><text x="0" y="257" font-size="26" fill="#586158">e licença de uso.</text>
+    </g>
+    <g stroke="#285747" stroke-width="3" marker-end="url(#arrow)">
+      <line x1="322" y1="444" x2="362" y2="444"/><line x1="622" y1="444" x2="662" y2="444"/><line x1="922" y1="444" x2="962" y2="444"/><line x1="1222" y1="444" x2="1262" y2="444"/><line x1="1522" y1="444" x2="1562" y2="444"/>
+    </g>
+    <rect x="88" y="759" width="1744" height="168" rx="8" fill="#e6ebdf"/>
+    <line x1="950" y1="793" x2="950" y2="892" stroke="#c1cbb7" stroke-width="2"/>
+    <text x="120" y="811" font-size="28" font-weight="bold" fill="#285747">Artista recusou ou perdeu o prazo?</text>
+    <text x="120" y="858" font-size="27">A proposta segue para o próximo da fila.</text>
+    <text x="984" y="811" font-size="28" font-weight="bold" fill="#285747">Cliente não respondeu à entrega?</text>
+    <text x="984" y="858" font-size="27">Repasse previsto após o prazo, sem disputa aberta.</text>
+    <text x="88" y="1006" font-size="24" fill="#586158">Hack Brasil 2026 · Vamos Ver</text>
+    <text x="1832" y="1006" text-anchor="end" font-size="25" font-weight="bold" fill="#285747">Demo: Pix de teste + repasse simulado</text>
+  </g>
+</svg>

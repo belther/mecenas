@@ -1,0 +1,99 @@
+MECENAS — VÍDEO DO RASCUNHO INICIAL
+Versão: 2026-11-20. Autor: Codex, a partir de SPEC.md e do pedido de Nabo.
+Status: roteiro proposto para revisão. Não representa funcionalidades concluídas.
+Objetivo: apresentar a ideia, o público e o estágio atual em até cerca de 3 minutos.
+Os tempos são estimativas. Grave uma leitura de teste para medir sua velocidade.
+
+1. ABERTURA — 0:00 a 0:20 — VOCÊ NA CÂMERA
+
+Olá! Eu sou o Ricardo, participo do Hack Brasil com o time Vamos Ver e estou
+criando o Mecenas, na trilha Cultura e Economia Criativa.
+
+A ideia cabe numa frase: você encomenda, o artista recebe.
+
+2. O PROBLEMA — 0:20 a 0:45 — VOCÊ NA CÂMERA
+
+Quem trabalha com ilustração pode passar por uma situação frustrante: o cliente
+pede um teste, o artista dedica horas ao desenho e depois fica sem resposta
+ou sem pagamento.
+
+O Mecenas quer ajudar artistas independentes brasileiros a receber encomendas
+com preço e condições definidos antes de começar a criar.
+
+3. O CAMINHO — 0:45 a 1:40 — MOSTRAR O GRÁFICO
+
+O fluxo que estamos construindo funciona assim.
+
+O cliente publica a ideia, envia referências e define o valor por artista.
+Os artistas se candidatam, sem precisar produzir um desenho de graça.
+
+O cliente escolhe um artista e pode organizar uma fila de suplentes. Se a
+proposta for recusada ou o prazo de resposta vencer, ela segue para o próximo.
+
+Depois do aceite, o cliente paga. O trabalho só começa quando o pagamento
+está confirmado.
+
+O artista entrega uma prévia com marca d'água e imagens do processo. A proposta
+inclui duas revisões. Depois da aprovação, o cliente recebe o arquivo final
+e uma licença de uso, e o fluxo prevê o repasse ao artista.
+
+4. AS PROTEÇÕES — 1:40 a 2:10 — GRÁFICO OU VOCÊ NA CÂMERA
+
+Também queremos evitar que uma entrega fique parada porque o cliente sumiu.
+Se ele não responder dentro do prazo e não houver uma revisão ou disputa em
+andamento, o sistema prevê a liberação automática ao artista.
+
+Uma suspeita de uso de inteligência artificial vai para análise da plataforma.
+O cliente não decide sozinho. E o Mecenas não cobrará comissão dos artistas.
+
+5. O QUE EXISTE HOJE — 2:10 a 2:40 — MOSTRAR A PÁGINA ATUAL
+
+O projeto está no começo. Esta página já está no ar, o repositório é público
+e a base técnica está conectada.
+
+Também testamos pagamento e reembolso no ambiente de testes. A demonstração
+usará dados sintéticos, pagamentos simulados e repasses simulados. Não estamos
+operando com dinheiro real.
+
+As próximas etapas são construir o cadastro e o fluxo completo de encomendas.
+
+6. FECHAMENTO — 2:40 a 3:00 — VOCÊ NA CÂMERA
+
+A proposta é simples: dar ao cliente um caminho claro para encomendar e ao
+artista condições para criar sem começar por um trabalho gratuito.
+
+Esse é o Mecenas. Você encomenda, o artista recebe.
+
+ORIENTAÇÕES PARA GRAVAÇÃO E EDIÇÃO
+
+- Grave na horizontal, idealmente em 1920 × 1080, com a câmera na altura dos olhos.
+- Grave em seis trechos. Uma pausa de dois segundos no começo e no fim ajuda nos cortes.
+- Fale naturalmente. Não precisa decorar nem fazer tudo em uma tomada.
+- Use sua voz durante todo o vídeo. A câmera pode continuar em um pequeno canto
+  durante o gráfico e a página, sem cobrir os textos.
+- Durante o trecho 3, mostrar fluxo-mecenas.png. Durante o trecho 5, mostrar
+  https://mecenas-azure.vercel.app/ . Evite gravar contas, chaves, notificações
+  ou outras janelas com informações privadas.
+- Mostrar o selo "Fluxo proposto · em desenvolvimento" no gráfico. Não criar
+  telas falsas que pareçam demonstrar um fluxo já funcionando.
+- Na edição, priorizar cortes de pausas/erros, legendas e transições discretas.
+  Música e imagens geradas por IA são opcionais; mantenha a fala inteligível.
+- Medir a duração da gravação real antes de exportar. Se passar de três minutos,
+  encurtar primeiro os exemplos e as explicações do trecho 4.
+- Salvar gravações brutas em local-evidence/video/ (ignorado pelo Git), ou em
+  outra pasta pessoal escolhida por Nabo. Não publicar gravações sem sua aprovação.
+- Este é o vídeo de apresentação da ideia para o rascunho inicial. O vídeo final
+  será refeito quando a aplicação demonstrar o fluxo completo.
+
+MATERIAL GRÁFICO
+
+fluxo-mecenas.svg: fonte vetorial editável e canônica.
+fluxo-mecenas.png: imagem 1920 × 1080 pronta para inserir no editor de vídeo.
+Gerar novamente com Node.js, a partir da raiz do projeto:
+node scripts/render-video-graphic.mjs
+Dependência: sharp, já instalada pela árvore de dependências do Next.js e fixada
+no package-lock.json. Se uma atualização remover sharp, mantenha o SVG como fonte
+e escolha conscientemente um renderizador; a aplicação não depende deste script.
+O script lê só esse SVG e grava o PNG local. Não envia dados nem usa serviços pagos.
+Referências de API: https://sharp.pixelplumbing.com/api-constructor/ e
+https://sharp.pixelplumbing.com/api-output/ .
