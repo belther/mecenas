@@ -28,4 +28,22 @@ export default defineSchema({
     exampleUploadIds: v.array(v.id("uploads")),
     status: v.union(v.literal("draft"), v.literal("open"), v.literal("closed")),
   }).index("by_client", ["clientId"]).index("by_status", ["status"]),
+  applications: defineTable({
+    requestId: v.id("requests"),
+    artistId: v.id("profiles"),
+  }).index("by_request_artist", ["requestId", "artistId"])
+    .index("by_artist", ["artistId"]),
+  selections: defineTable({
+    requestId: v.id("requests"),
+    revision: v.number(),
+    queue: v.array(v.id("applications")),
+  }).index("by_request", ["requestId"]),
+  offers: defineTable({
+    applicationId: v.id("applications"),
+    requestId: v.id("requests"),
+    slot: v.number(),
+    pricePerArtistCents: v.number(),
+    status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("declined")),
+  }).index("by_application", ["applicationId"])
+    .index("by_request_status", ["requestId", "status"]),
 });

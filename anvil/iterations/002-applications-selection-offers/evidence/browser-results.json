@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "outcomes": [
+    "Seven synthetic actors created and authenticated in separate contexts.",
+    "Two slots and two ranked backups. Keyboard reorder kept focus and announced the new rank on mobile. The owner saw the portfolio and the other client was denied.",
+    "Declines advanced the ranked queue. One stale owner edit required loading the saved state.",
+    "Application feedback retained keyboard focus. Leaving a dirty review triggered a warning and cancelling preserved the queue.",
+    "Real development calls: concurrent duplicate apply, paired declines and competing responses preserved the invariants. Observed revisions: 1, 2, 3.",
+    "The promoted artists accepted on desktop and mobile. Reload preserved awaiting payment and the application closed after the second acceptance."
+  ],
+  "browser": "157.0.8103.79"
+}

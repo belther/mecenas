@@ -1,0 +1,14 @@
+{
+  "baseGitCommit": "0444af4487c1756853040c4a0503bc8d722aa88d",
+  "hashAlgorithm": "SHA-256",
+  "files": {
+    "app/painel/page.tsx": "ee6920ebf86fb173af0acfe4a638101811cfae464ba9c797ab934871aec44cdf",
+    "app/painel/applications.tsx": "0d36f1107397c97a6a095680d91e31469526d82918a62a9b568ce83b5987bb01",
+    "app/painel/feedback.tsx": "dc6173b5f440dbbd3d05180e5d780b7668fa62254e2e27f5f169f267125e7dec",
+    "app/painel/workspace.css": "65f34ebdae9c8642deff4f50d913b0844b91f312169c94f1da127c33f00ef913",
+    "convex/schema.ts": "6021e1ad7b75922cc3eceea4349bc63d45959d1489f6cd8f034ef5e31562509f",
+    "convex/applications.ts": "a7d0fb4bdf973c04074797bec7176336d8c8609483df36ca6ea968a931f2a03e",
+    "convex/_generated/api.d.ts": "bb313511a40d76014a658a4ac527c73c378e5fda6aa451f0a169c232554b0b12",
+    "tests/applications.test.ts": "87fdaa5e83ea566ec9ded99f86a4a3d040d9b437dc27592da15e749e6d816d94"
+  }
+}

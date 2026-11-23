@@ -1,0 +1,22 @@
+{
+  "files": {
+    "package-lock.json": "0f34be8828f4e23543f1df71a6b03c7d8ffa050193a0d0e6daa562058b64275e",
+    "package.json": "63434f25311f199967e48c63ed4b21d62a7b627604ef462f1ca71c6d6478313d",
+    "scripts/abacatepay-probe.mjs": "ba04b7759b7427ea77c5894cdbc8528fd30aa813f9444c2902b59d83fe7a4449",
+    "scripts/abacatepay-probe.test.mjs": "0fa6317553bc62b0e72d7635c1ecd4714042809b9b86c30e47193910201f88b8",
+    "scripts/render-video-graphic.mjs": "cca5e0d0b69a347a3d68a0db25008fda8a241203c2504443f9563d4cb8f2f214",
+    "tests/backend.test.ts": "c801276e86134772dcde7c0f485d3f95b73673c95a2892cc65ab62dc1518df48",
+    "tests/images-money.test.ts": "1eae0fc1cbc7a4faafabe45458d8b9dec0471317ea27b8644b5c415415442943",
+    "tsconfig.json": "be38a3b774c7367d9a2bf6ba8ea2a7847e052dce31b18e937b72076d3cd06f46",
+    "vitest.config.ts": "bfde17f5b9722353ee0536c26db8c89ac19e8d3e68346aa929572008efc5d884"
+  },
+  "paths": [
+    "tests",
+    "scripts",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "vitest.config.ts"
+  ],
+  "schema_version": 1
+}

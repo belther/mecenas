@@ -1,0 +1,108 @@
+{
+  "role": "independent adversarial reviewer — Mecenas iteration 002",
+  "findings": [],
+  "checks": [
+    {
+      "area": "Execution",
+      "result": "Node --version succeeded: v24.20.0. The synthetic suite did not start.",
+      "command": "node \"[workspace]/node_modules/vitest/vitest.mjs\" run --configLoader runner --no-cache",
+      "error": "Exit 1: EPERM, operation not permitted, lstat 'C:\\', during Node entry-point resolution."
+    },
+    {
+      "area": "Ownership",
+      "result": "Source trace found no authorization counterexample through the exposed operations. Owner review and selection check client ownership; responses check the application's artist; every protected operation requires the appropriate profile.",
+      "references": [
+        "convex/applications.ts:35",
+        "convex/applications.ts:72",
+        "convex/applications.ts:112",
+        "convex/applications.ts:154"
+      ]
+    },
+    {
+      "area": "Safe projections",
+      "result": "Artist history queries only that artist's applications. Offer summaries omit queue and other recipients. Responses return only the caller's saved offer status. Owner review checks ownership before loading applicant portfolios. Request projections omit application and offer records; draft access remains owner-only.",
+      "references": [
+        "convex/applications.ts:21",
+        "convex/applications.ts:47",
+        "convex/applications.ts:69",
+        "convex/applications.ts:184",
+        "convex/requests.ts:41"
+      ]
+    },
+    {
+      "area": "Capacity and pricing",
+      "result": "Source trace rejects overflow, duplicate candidates, list overlap, foreign applications and previously offered candidates. Pending and accepted offers reserve slots. A nonempty backup queue requires full reservation coverage. Creation and promotion copy the stored integer-cent price.",
+      "references": [
+        "convex/applications.ts:25",
+        "convex/applications.ts:121"
+      ]
+    },
+    {
+      "area": "Race, replay and atomic promotion",
+      "result": "Final responses return the existing status before further writes. Decline, same-slot promotion, queue consumption and revision update share one mutation. Concurrent mutations touch the shared selection record. No concrete source-level counterexample was found; transaction conflict handling was not executed.",
+      "references": [
+        "convex/applications.ts:160",
+        "convex/applications.ts:167"
+      ]
+    },
+    {
+      "area": "Stale owner updates",
+      "result": "Selection checks the expected revision before writes. Successful selections and first responses increment it; new applications do not. The interface retains ordinary failed selections and blocks drafts when their revision becomes stale.",
+      "references": [
+        "convex/applications.ts:116",
+        "convex/applications.ts:144",
+        "convex/applications.ts:183",
+        "app/painel/applications.tsx:160",
+        "app/painel/applications.tsx:289"
+      ]
+    },
+    {
+      "area": "Synthetic test coverage",
+      "result": "Read all three test files against initial-design.json. The installed convex-test harness serializes top-level transactions using a lock. Its Promise.all cases exercise serialized outcomes, not overlapping transactions or optimistic conflict retries.",
+      "references": [
+        "tests/applications.test.ts:138",
+        "tests/applications.test.ts:181",
+        "tests/applications.test.ts:210",
+        "node_modules/convex-test/dist/index.js:2225"
+      ]
+    },
+    {
+      "area": "Remaining reproducible cases for the conductor",
+      "status": "Not executed",
+      "cases": [
+        {
+          "case": "Run the packet suite",
+          "procedure": "Run the recorded Vitest command in an authorized synthetic environment where Node can resolve its entry point. Record actual test results."
+        },
+        {
+          "case": "Capacity boundary",
+          "procedure": "Create a 10-slot request with 11 synthetic applicants. Reserve nine slots, accept one, then attempt two additional selections at the current revision. Expect rejection with unchanged state. Select one instead and verify ten distinct active slots."
+        },
+        {
+          "case": "Controlled response orders",
+          "procedure": "With A pending and queue [B,C], separately exercise accept-before-decline and decline-before-accept. Retry the winning response. Expect both answers to report the saved status, one revision increment, and at most one promotion."
+        },
+        {
+          "case": "Owner save against either response",
+          "procedure": "With A pending and queue [B,C] at revision r, exercise both commit orders between owner reorder [C,B] and A's accept, then repeat with decline. Response-first must reject the save using r. Save-first decline must promote C."
+        },
+        {
+          "case": "Rollback at intermediate writes",
+          "procedure": "In a conductor-owned test copy, inject failure after staging decline but before promotion, and after creating the first offer of a multi-offer selection. Verify unchanged offers, queue, request and revision; remove the fault and retry once. The packet's existing rollback test aborts after a completed nested promotion."
+        },
+        {
+          "case": "Interface recovery and focus",
+          "procedure": "Using synthetic sessions at desktop and narrow widths, reorder boundary backups by keyboard, induce an ordinary failed save and a stale revision, then cancel and confirm decline. Verify retained editable choices, required refresh, rank announcements and result focus."
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "No confirmed implementation defect was found by source inspection. This is not an executed behavioral pass.",
+    "Zero tests executed. Node entry-point resolution was blocked by filesystem permissions; no workaround or permission expansion was attempted.",
+    "No typecheck, build, browser interaction or runtime conflict test was performed.",
+    "The package test script references scripts/*.test.mjs, which is absent from the safe packet. Full repository test coverage cannot be established here.",
+    "Reads stayed inside the safe packet and the allowed convex-test dependency. No source or test writes, Git, environment inspection, credentials, network, collaboration, generic resource tools, connectors, account sessions or production were used.",
+    "Collaboration and generic resource denial were not verified. The approved exception does not establish those controls."
+  ]
+}

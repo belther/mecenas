@@ -1,0 +1,32 @@
+{
+  "response": {
+    "checks": {
+      "navigation": "Supported: profile editing and sign-out confirm dirty-review exit; cleanup clears the shared flag. Browser report confirms cancellation preserves the queue.",
+      "focus": "Supported: local submission focuses the result; an existing remote application alone does not trigger focus. Skip-link target is focusable.",
+      "order": "Added acceptance and decline checks cover both sequential commit orders, stale owner saves, and repeated responses.",
+      "capacity": "Added boundary check rejects eleven reservations without changing the review, then permits ten across accepted and pending offers.",
+      "rollback": "Injected failures exercise decline-before-promotion and partial selection writes; checks compare review state and verify successful retries."
+    },
+    "actionable_findings": [
+      "Browser evidence does not explicitly confirm profile-edit/sign-out paths, skip-link focus, or remote-session focus preservation. Record those specific outcomes.",
+      "Rollback assertions compare the review projection; add direct offer-state assertions to establish that no hidden or orphaned writes remain."
+    ],
+    "limitations": [
+      "Reviewed only the three requested files in one read; ran no tests.",
+      "Sequential order checks do not simulate transaction conflicts. Development concurrency results are summarized without traces.",
+      "Original issue details and complete source were unavailable; no definite regression identified in the supplied changes."
+    ]
+  },
+  "runtime": "Codex CLI 0.171.0-alpha.13",
+  "requested_model": "gpt-6.1-sol",
+  "reasoning": "low",
+  "raw_events_sha256": "c01eb4010af782500a489d27e00d553eae473f1f4129a5878267e4e47b8f13cc",
+  "repair_diff_sha256": "906669f2edf22aa6c4ea5ff9ba41208ed1818e09793a92d884e788ff28aad958",
+  "usage": {
+    "input_tokens": 48008,
+    "cached_input_tokens": 20352,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 427,
+    "reasoning_output_tokens": 33
+  }
+}

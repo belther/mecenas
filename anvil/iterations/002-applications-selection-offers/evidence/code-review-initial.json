@@ -1,0 +1,73 @@
+{
+  "role": "independent_code_reviewer",
+  "findings": [
+    {
+      "severity": "medium",
+      "file": "app/painel/page.tsx",
+      "line": 36,
+      "issue": "Opening profile editing discards an unsaved selection or reordered backup queue without warning. SelectionForm's beforeunload handler does not cover this React state change.",
+      "reproduction": "Prepare an unsaved selection or reorder backups. Click 'Editar perfil', then return to requests and reopen the review. The unsaved choices are lost.",
+      "recommendation": "Guard profile navigation when the review is dirty, or preserve the review draft outside the component that is unmounted."
+    },
+    {
+      "severity": "medium",
+      "file": "app/painel/applications.tsx",
+      "line": 49,
+      "issue": "Successful application removes the focused button without moving focus to the result. The status announcement does not preserve keyboard focus as required by the interface specification.",
+      "reproduction": "Use the keyboard to activate 'Candidatar-se'. On success, its button is replaced by an unfocusable paragraph, leaving no explicit focus destination.",
+      "recommendation": "Make the result programmatically focusable and focus it after successful application. Verify the next keyboard navigation step in a browser."
+    },
+    {
+      "severity": "medium",
+      "file": "tests/applications.test.ts",
+      "line": 138,
+      "issue": "The concurrent-call tests do not establish the frozen design's transaction race guarantees. The installed convex-test implementation serializes top-level transactions. This test also checks only final slot membership, without identifying which decline committed first or inspecting intermediate committed snapshots.",
+      "reproduction": "Inspect the Promise.all race tests and convex-test/dist/index.js: TransactionManager.begin acquires a top-level lock. The tests exercise serialized outcomes without testing overlapping reads, conflict retries, or controlled alternative commit orders.",
+      "recommendation": "Retain these outcome tests, explicitly label their limits, and add authorized synthetic evidence for both owner-save/response orderings and concurrent promotion with committed-state observations."
+    },
+    {
+      "severity": "medium",
+      "file": "tests/applications.test.ts",
+      "line": 228,
+      "issue": "T16 injects failure only after decline and promotion have both completed inside a nested mutation. It does not cover the frozen design's failure between decline and promotion, failure after the first selection insert, or successful retry following rollback.",
+      "reproduction": "Read the sole T16 test: respond completes before the synthetic outer exception, and the test ends after checking rollback.",
+      "recommendation": "Add controlled synthetic failures at the specified write boundaries for both mutations, verify unchanged offers, queue and revision, then retry and assert exactly one complete transition."
+    }
+  ],
+  "checks": [
+    {
+      "check": "Specification and frozen design",
+      "result": "Read spec.md, ROOT-SPEC.md and initial-design.json; compared implementation and test assertions with their requirements."
+    },
+    {
+      "check": "Backend authorization and privacy",
+      "result": "Static review found role and ownership checks on application operations, owner-only roster access, and recipient checks before responses. Artist response outputs exclude backup identities. No supported authorization bypass was identified."
+    },
+    {
+      "check": "Capacity, pricing and transaction structure",
+      "result": "Selection validates revisions, capacity, duplicate candidates, request membership and previous offers. Decline and promotion share one mutation; acceptance retains the reservation and closes applications at full acceptance. Offers copy integer-cent prices without splitting. No supported backend race or partial-write defect was identified by source inspection."
+    },
+    {
+      "check": "Mobile and keyboard source review",
+      "result": "CSS stacks applicants and summary at narrow widths. Ranking controls include artist names, announce changed ranks and explicitly restore focus after movement. Decline confirmation and payment-condition text are present. Browser behavior was not exercised."
+    },
+    {
+      "check": "Prior test preservation",
+      "result": "SHA-256 hashes match test-baseline.json for tests/backend.test.ts, tests/images-money.test.ts, package.json, package-lock.json, tsconfig.json and vitest.config.ts. These supplied baseline files remain byte-identical."
+    },
+    {
+      "check": "Additional test coverage limits",
+      "result": "No browser interaction tests are supplied for T18–T20. Coverage also omits portions of the specified authorization matrix, populated-portfolio privacy checks and the 10-slot case."
+    },
+    {
+      "check": "Execution",
+      "result": "No tests, typecheck, build or application sessions were executed."
+    }
+  ],
+  "limitations": [
+    "Read-only source review, confined to the safe packet and the required convex-test dependency source.",
+    "Baseline-listed scripts/abacatepay-probe.mjs, scripts/abacatepay-probe.test.mjs and scripts/render-video-graphic.mjs are absent from the packet; their preservation could not be verified. This does not establish deletion from the repository.",
+    "Runtime isolation, actual Convex conflict handling, mobile rendering, keyboard behavior and assistive-technology announcements remain unverified.",
+    "No outside files, Git, environment inspection, credentials, network, collaboration, generic resource tools, connectors, account sessions or production were accessed. Denial of collaboration and generic resource routes was not verified."
+  ]
+}

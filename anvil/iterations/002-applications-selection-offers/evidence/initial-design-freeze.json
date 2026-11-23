@@ -1,0 +1,16 @@
+{
+  "status": "frozen before implementation",
+  "sha256": "d20ba8c25fcdd89f499dfb01e8fadbc16b91d003d1241cee9d0d672b52d27751",
+  "raw_events_sha256": "1a8340a84b8c9d0413a6735d81e36a44ac5766aa1353506c28ea855103f2b660",
+  "cases": 20,
+  "requested_model": "gpt-6.1-sol",
+  "reasoning": "medium",
+  "native_cli": "0.171.0-alpha.13",
+  "usage": {
+    "input_tokens": 43477,
+    "cached_input_tokens": 20352,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 2802,
+    "reasoning_output_tokens": 51
+  }
+}

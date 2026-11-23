@@ -1,0 +1,169 @@
+{
+  "cases": [
+    {
+      "id": "T01",
+      "purpose": "Enforce server authorization.",
+      "setup": "Use independent anonymous, profile-less, Sol, Rio and artist callers.",
+      "action": "Call each protected operation with unauthorized actors, including valid foreign request and offer IDs.",
+      "expected": "Anonymous and profile-less callers cannot apply, review or respond; clients cannot apply or respond; artists cannot select or read owner rosters; Rio cannot review or select for Sol; artists cannot answer another artist's offer. Rejected calls change nothing and expose no protected state."
+    },
+    {
+      "id": "T02",
+      "purpose": "Verify privacy and safe response shape.",
+      "setup": "Sol has applications, ranked backups and offers with differing responses; include a private draft.",
+      "action": "Inspect raw mine, respond, forRequest and existing public/deep-link outputs as each role.",
+      "expected": "Owner review includes authorized names, optional bios, portfolio previews and states. Artist outputs contain only their own history, no roster, rank, other responses or promoted identity. Public output reveals neither application nor offer state. Drafts remain owner-only."
+    },
+    {
+      "id": "T03",
+      "purpose": "Apply once without extra requirements.",
+      "setup": "Use an iteration-001 published request and an artist with an empty portfolio.",
+      "action": "Apply, retry, issue concurrent apply calls, then reload.",
+      "expected": "All successful calls resolve to one application identity and one record. Own status persists. No upload, message, sketch or portfolio addition is required."
+    },
+    {
+      "id": "T04",
+      "purpose": "Enforce application availability.",
+      "setup": "Prepare a draft and published requests with a vacancy, pending reservations, or every slot accepted.",
+      "action": "Try a new eligible artist application in each state; inspect existing history after closure.",
+      "expected": "Draft and fully accepted requests reject new applications. Vacant and pending-only capacity permits applications. Closure preserves existing own history."
+    },
+    {
+      "id": "T05",
+      "purpose": "Enforce capacity and partial selections.",
+      "setup": "Use requests with 1, 2 and 10 slots and enough synthetic applicants.",
+      "action": "Save partial selections without backups, fill remaining slots, attempt overflow, and attempt new selections when pending or accepted offers reserve all slots.",
+      "expected": "Partial selection succeeds. Each pending or accepted offer reserves one distinct slot. Total reservations never exceed capacity; invalid saves leave all state unchanged."
+    },
+    {
+      "id": "T06",
+      "purpose": "Validate candidates and save atomically.",
+      "setup": "Include eligible, foreign-request, non-applicant, pending, accepted and declined candidates.",
+      "action": "Try duplicates within either list, overlap between lists, foreign or unknown identities, and previously offered candidates in either list.",
+      "expected": "Each invalid save rejects the entire selection and queue update. No partial offers, queue changes or reoffers appear."
+    },
+    {
+      "id": "T07",
+      "purpose": "Enforce backup coverage and editable remaining queue.",
+      "setup": "Use a two-slot request with eligible applicants.",
+      "action": "Save one selection plus backups with a vacancy; then save enough selections plus existing reservations to cover both slots. Reorder, add and remove eligible remaining backups.",
+      "expected": "The vacancy-plus-backups save fails. Full coverage permits a nonempty queue. Queue edits preserve existing offer recipients and terms. Saved order is explicit and visible to the owner."
+    },
+    {
+      "id": "T08",
+      "purpose": "Preserve exact per-artist price.",
+      "setup": "Use a three-slot request priced at 5000 integer cents per artist.",
+      "action": "Select recipients, decline to promote a backup, accept offers, and reload both roles.",
+      "expected": "Every created and promoted offer stores exactly 5000 cents and displays R$50,00 per artist. Acceptance preserves that amount; no division by slot count or rounding occurs."
+    },
+    {
+      "id": "T09",
+      "purpose": "Verify deterministic promotion into the released slot.",
+      "setup": "A and B hold pending offers in distinct slots; save backups in order D, C.",
+      "action": "Decline A, inspect committed state, then decline B.",
+      "expected": "D receives A's exact slot first; C receives B's exact slot next. Original offers remain declined history. Each backup is consumed once with identical pricing. Artist response output identifies no replacement."
+    },
+    {
+      "id": "T10",
+      "purpose": "Verify concurrent ranked promotion.",
+      "setup": "A and B are pending; saved queue is D, C.",
+      "action": "Release simultaneous declines through independent callers and inspect committed snapshots.",
+      "expected": "The first committed decline consumes D; the second consumes C. Replacements occupy the respective released slots. No duplicate consumption, overflow or committed decline without an eligible replacement is observable."
+    },
+    {
+      "id": "T11",
+      "purpose": "Handle exhaustion and final capacity.",
+      "setup": "Two pending offers and one eligible backup; separately prepare a request whose last pending offer can be accepted.",
+      "action": "Decline both offers; then test accepting the final pending offer in the separate request.",
+      "expected": "One decline promotes the backup; the other leaves a visible vacancy and declined history. The owner can select a fresh applicant into the vacancy. All accepted slots close applications; remaining backups cause no further offers."
+    },
+    {
+      "id": "T12",
+      "purpose": "Make responses final and retries harmless.",
+      "setup": "Use separate pending offers for acceptance and decline, with multiple backups.",
+      "action": "Repeat and concurrently repeat accept; repeat and concurrently repeat decline; send the opposite response after each saved outcome.",
+      "expected": "Same-answer retries return the existing own outcome without additional effects. Decline retries consume no extra backup. Conflicting answers report the saved state and cannot reverse it."
+    },
+    {
+      "id": "T13",
+      "purpose": "Resolve accept-versus-decline races.",
+      "setup": "One pending offer and an eligible backup.",
+      "action": "Race accept against decline from independent recipient sessions.",
+      "expected": "Only the first committed response changes state. Acceptance retains the original reservation and consumes no backup. Decline replaces that reservation once. Both callers ultimately observe the saved outcome without other artists' identities."
+    },
+    {
+      "id": "T14",
+      "purpose": "Reject stale owner saves while allowing new applications.",
+      "setup": "Two owner tabs load revision r; prepare pending offers, backups and a new artist.",
+      "action": "Save from one tab, then save from the other using r. Repeat after an artist response. Separately add only a new application before saving with the previous revision.",
+      "expected": "Owner saves and artist responses invalidate prior selection revisions. Stale saves change nothing and require refresh and review. A new application alone does not invalidate an otherwise valid selection."
+    },
+    {
+      "id": "T15",
+      "purpose": "Serialize owner edits against responses.",
+      "setup": "Owner has an unsaved reordered queue while a recipient can decline or accept.",
+      "action": "Race the owner save against each response using controlled interleavings.",
+      "expected": "If the save commits first, a subsequent decline uses the saved order. If the response commits first, the old-revision save fails. No stale save resurrects consumed candidates, overwrites offer outcomes or changes existing terms."
+    },
+    {
+      "id": "T16",
+      "purpose": "Prove transaction rollback.",
+      "setup": "Use a controlled test failure after staging decline but before promotion completion; also prepare a multi-offer selection with a queue.",
+      "action": "Force the decline/promotion transaction to fail; force a selection transaction to fail after staging one offer; inspect committed state and retry without the fault.",
+      "expected": "Failure preserves the original pending offer, queue, capacity and revision; selection failure creates no offers or queue update. A clean retry performs exactly one complete transition."
+    },
+    {
+      "id": "T17",
+      "purpose": "Keep acceptance conditional on payment.",
+      "setup": "Recipient has a pending offer.",
+      "action": "Accept and reload artist and owner views; inspect available actions and persisted payment state.",
+      "expected": "Artist sees 'Oferta aceita. Aguarde a confirmação do pagamento para começar.' Owner sees 'Oferta aceita · aguardando pagamento' and the later-demo payment note. Acceptance never marks funds held or funded. No start-work, checkout, payout, delivery, payment simulation or expiry automation becomes available."
+    },
+    {
+      "id": "T18",
+      "purpose": "Verify mobile keyboard ranking.",
+      "setup": "At narrow and desktop widths, show several backups with portfolio previews; enable keyboard navigation and status announcements.",
+      "action": "Move middle and boundary artists using Subir and Descer; save and reload. Repeat with reduced motion enabled.",
+      "expected": "Controls include artist names in accessible labels. Order and rank numbers update immediately; new rank is announced. Focus stays on the moved artist or an available control in its row at a boundary. Mobile summary and queue stack below applicants; desktop shows applicants beside summary. Saved order persists."
+    },
+    {
+      "id": "T19",
+      "purpose": "Verify decisions, feedback and recovery.",
+      "setup": "Use delayed calls, a recoverable failed save, a stale revision, and a pending offer.",
+      "action": "Review selection before saving, double-submit while pending, cancel then confirm decline, and recover from each failure.",
+      "expected": "Selection shows count, capacity, effect and per-artist price before explicit save. Decline confirmation explains its effect and cancellation changes nothing. Pending feedback prevents duplicate submission. Ordinary failure retains editable choices; stale state requires refresh and review. Results retain focus when actions disappear; status is textual and announced."
+    },
+    {
+      "id": "T20",
+      "purpose": "Check scoped interface and existing-path compatibility.",
+      "setup": "Use synthetic profiles, old requests, empty states and portfolio previews.",
+      "action": "Exercise profile, draft, publish, browse, apply and own-history navigation at desktop and narrow widths.",
+      "expected": "Existing paths remain usable. Artist labels progress from Candidatar-se to Candidatura enviada and own offers in Minhas candidaturas. Portfolio review uses existing previews with explicit image dimensions. Empty and error states remain understandable; cream workspace, dark green actions and Georgia headings remain."
+    }
+  ],
+  "redStrategy": {
+    "approach": "Assert observable state and raw role-specific outputs through authenticated callable boundaries, with browser checks reserved for interaction and accessibility. No missing-import or startup failure counts as a behavioral red.",
+    "meaningfulReds": [
+      "Unauthorized caller receives protected fields or changes state.",
+      "Concurrent apply creates two records.",
+      "Pending reservations are ignored and selection exceeds capacity.",
+      "A vacancy is saved alongside a nonempty backup queue.",
+      "5000 cents is split across three slots.",
+      "Promotion follows applicant identity or original order instead of the saved queue.",
+      "Concurrent declines consume the same backup or retries consume another.",
+      "An old owner revision overwrites a response or consumed queue.",
+      "Injected transaction failure leaves a committed decline, partial selection or changed revision.",
+      "Acceptance marks payment funded or enables work.",
+      "Keyboard reordering loses focus, omits rank announcements or saves a different order."
+    ],
+    "raceEvidence": "Use controlled commit interleavings where supported. Verify final invariants and committed snapshots; do not assume invocation order equals commit order."
+  },
+  "limitations": [
+    "Design only; no application code was implemented or run. Only spec.md and interfaces.txt were read.",
+    "The specification is draft revision 0.1. Approval and execution authorization were not inferred.",
+    "Exact output schemas, error codes, revision representation and test hooks are unspecified; assertions target required behavior rather than invented fields.",
+    "Reliable mid-transaction fault injection and controlled race scheduling depend on the eventual harness. Without them, rollback and commit-order coverage remain incomplete.",
+    "The rule for skipping an ineligible queued candidate is stated, but no authorized operation that makes a saved backup ineligible is defined. A dedicated fixture requires implementation clarification.",
+    "Future payment verification, deadlines, production behavior and full iteration-001 regression coverage cannot be established from this packet."
+  ]
+}
