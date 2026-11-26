@@ -1,0 +1,33 @@
+Continue Mecenas: prepare iteration 002, then implement after its execution prerequisites and owner approval are satisfied.
+
+Project: C:/Users/nabor/Documents/Workspace/Personal Projects/Mecenas
+Repository: https://github.com/belther/mecenas
+Public workspace: https://mecenas-azure.vercel.app/painel
+
+Read SPEC.md first, then AGENTS.md, anvil.yaml, anvil/product.md and anvil/roadmap.md. Use the existing repository and settled stack: Next.js TypeScript App Router, Convex and Vercel. Do not restart the scaffold or repeat settled tool research.
+
+Current state
+- Iteration 001 implements synthetic username/password authentication, immutable artist/client roles, profiles, validated portfolio/reference uploads, private request drafts, publication and artist browsing.
+- Main was clean at handoff preparation, commit 0444af4. This brief is a new, uncommitted documentation file. Inspect current Git status and concurrent changes before editing.
+- Last implementation verification: 21 passing checks, typecheck/build and synthetic client/artist browser flows in development. Read anvil/iterations/001-accounts-profiles-requests/evidence/index.md and docs/deployment-001.md for exact evidence and limits; historical pre-deployment reports are superseded by the deployment record.
+- Iteration 001 is published. Production registration is closed, production test accounts are not provisioned, and authenticated production flows have not been verified. Do not confuse public page access with a usable signed-in production demo.
+- Development Convex: successful-fennec-849. Production: peaceful-salmon-164. Existing service keys are in ignored .env.local; never print, copy into worker packets, commit or expose them. Generated development test passwords were not retained. No preview server or review worker is intentionally running from the previous session; verify current state.
+
+Iteration 002 outcome
+A synthetic artist applies to an open illustration request without drawing or uploading free work. Its owning client reviews applicants, chooses artists within the request's slot count, and ranks a backup queue. The selected artist accepts or declines an offer; a decline advances the correct next eligible backup atomically. Keep the per-artist BRL price explicit and preserve SPEC rules R1-R4.
+
+First prepare the specification, state transitions, acceptance criteria, verification plan and rendered review for 002. Identify material choices for Nabo instead of inventing them. Explain how acceptance connects to iteration 003 payment: acceptance alone must not tell an artist to start unpaid work. Scheduled expiry/timeout automation is planned for iteration 005; make this boundary explicit in the proposed slice. No payments, chat, delivery, reputation or broad redesign in this iteration.
+
+Workflow and authority
+- Anvil remains pinned to 0.5.0-hub-dev, fingerprint 1f77383f1bcc3237c60aa9b471a1f3ff5b36ff26f26644c223a47ac0ebc2a573. Local release: C:/Users/nabor/Documents/Workspace/Personal Projects/Anvil/releases/0.5.0-hub-dev-candidate. Read its Anvil/Iterate instructions before use; never modify it or copy private implementation into Mecenas.
+- Full worker isolation is unverified. The earlier limited exception applied ONLY to iteration 001. It does not authorize iteration 002 execution. Prepare the next spec and resolve applicable approval/isolation prerequisites before dispatch or implementation. Report the specific remaining gap if it persists; do not silently reuse the old exception or rebuild isolation infrastructure indefinitely.
+- Preserve baseline test contents as well as hashes. Freeze independent initial design, retain meaningful red/green evidence, use separate adversarial testing and code review, and record repair limits from the applicable approved plan. Avoid Windows packet filename collisions such as SPEC.md versus spec.md. Prior workers could read their permitted packets but could not execute Node because ancestor path checks were denied; do not claim those tests ran.
+- Synthetic data only, sandbox only, no paid operations. Do not change production, provision production accounts, open registration, upgrade Anvil or deploy iteration 002 without its applicable approval. Normal hackathon pushes to main are already authorized within AGENTS.md. Check dates before commits; repository freeze starts after 2026-11-30 23:59 America/Sao_Paulo.
+
+Design tools
+Use the project-local skills in .agents/skills: frontend-design for the visual plan, emil-design-eng for interaction details, and web-design-guidelines with its bundled local rules for review. Read docs/design-skills.md. Preserve the approved cream/green identity while extending functional screens. These skills have not yet been applied to redesign the live app. Impeccable is not installed; Nabo deferred it for a later comparison with hooks off.
+
+Completion checks after implementation is authorized
+Verify anonymous, role and ownership denial; duplicate applications; slot limits; queue order; atomic decline/promotion; repeated or concurrent accept/decline requests; and safe responses. Run npm test, npm run typecheck and npm run build. Exercise client and multiple artist accounts, reload persistence, errors/retries and narrow/desktop views against development. Record exact code identity, findings and remaining limits. Keep production-account setup as a separate pending task.
+
+Start by inspecting the current records and preparing iteration 002 for Nabo's review. Do not make him repeat decisions already recorded.
