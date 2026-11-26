@@ -13,7 +13,7 @@ See [product](product.md) for scope and durable decisions and [SPEC Â§10](../S
 | [006](iterations/006-disputes-refunds-reputation/review.html) | AI flag, platform review, sandbox refund and factual reputation (R9/Â§4). | [Implemented and verified locally](iterations/006-disputes-refunds-reputation/evidence/verification.md). Actual sandbox refund pending development payment configuration. |
 | [007](iterations/007-demo-data-walkthrough/spec.md) | Synthetic demo data and end-to-end fixes; blind ratings deferred. | [Implemented and verified locally](iterations/007-demo-data-walkthrough/verification.md), 2026-11-25. Seeded on Convex development only. |
 | [008](iterations/008-polish-video-setup/spec.md) | Interface polish, final demonstration video script and reproducible setup documentation. | [Implemented and verified locally](iterations/008-polish-video-setup/verification.md), 2026-11-25. Video recording by Nabo pending. |
-| 009 | Submission checks, buffer and final delivery before the freeze. | Planned. |
+| 009 | Payment setup on Convex development and AbacatePay test mode (Nabo, per [handoff](../docs/briefs/2026-11-23-iteration-003-handoff.txt)), then the pending webhook (003) and sandbox refund (006) checks; submission checks, buffer and final delivery before the freeze. | Planned. Payment setup deferred to 009 by Nabo, 2026-11-25. |
 
 The initial idea-presentation video and sponsor-credit review can proceed separately from iteration 001. No real-money payment, paid plan or release upgrade is implied by this roadmap.
 
