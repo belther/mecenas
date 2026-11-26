@@ -9,21 +9,67 @@ If present, `anvil.yaml` and `anvil/` contain development records only.
 
 ## Current state
 
-Iteration 001 adds a Portuguese workspace at `/painel`: synthetic account sign-in,
-artist/client profiles, validated portfolio/reference images, private request
-drafts, publication and artist browsing. It was verified locally against the
-**development** Convex deployment, then published with Nabo's approval on
-2026-11-21: https://mecenas-azure.vercel.app/painel . Production health, public
-page access and anonymous-denial checks pass. Registration is closed. One private
-synthetic production login was verified on 2026-11-24. See the original
-[release evidence](docs/deployment-001.md). The repository also contains offers,
-test payments, versioned deliveries, deadlines, human dispute review, reputation
-and a reproducible synthetic demo seed. The public site still serves iteration 001.
-Without a Convex URL the page explicitly shows local demo mode.
-First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
-Convex dev and production health queries are connected. The sandbox probe
-confirmed that refunding a split payment leaves the artist's split credited.
+The app covers the full commission flow in Portuguese at `/painel`: artist
+applications, offers with a backup queue and 24-hour expiry, Pix in AbacatePay
+**test mode**, watermarked deliveries with two revisions, 72-hour automatic
+approval, licence download, human review of AI flags, and factual reputation.
+It is verified locally against a Convex **development** deployment, with a
+reproducible synthetic demo (`npm run demo:seed`).
+
+- The public site https://mecenas-azure.vercel.app/painel still serves
+  iteration 001 (accounts, profiles and requests). See [release evidence](docs/deployment-001.md).
+- Payout to the artist is **simulated**. The sandbox showed that a refund does not
+  reverse a subaccount split, so no real escrow is claimed ([SPEC §6](SPEC.md#6-payments-abacatepay-test-mode)).
+  Production would need a licensed escrow provider.
+- The end-to-end provider webhook and sandbox refund checks are still pending
+  development payment settings.
+
 Read [SPEC.md](SPEC.md) for product rules and [AGENTS.md](AGENTS.md) for boundaries.
+
+## Quick start for judges
+
+You need Node.js 22 or newer and a free Convex account. No payment keys are
+needed to explore the demo. Run each command from the repository root.
+
+1. Install and start the Convex development backend. Sign in and create a
+   project when the CLI asks. Leave this terminal open.
+
+   ```powershell
+   npm install
+   npm run convex:dev
+   ```
+
+2. Wait until the first terminal says the Convex functions are ready. Then, in a
+   second terminal in the same folder, load the demo data. Sign-in needs no extra
+   keys: Convex Auth manages them on the deployment.
+
+   ```powershell
+   npm run demo:seed
+   ```
+
+3. Copy the `npx convex env set MECENAS_REVIEWER_USER_ID …` line that the seed
+   prints, and run it in the same folder. It turns on the platform review screen for `demo-revisor`.
+
+4. Start the app and open http://localhost:3000/painel :
+
+   ```powershell
+   npm run dev
+   ```
+
+5. Sign in with any demo account. The shared password is in the file `.env.demo`,
+   which the seed created.
+
+| Account | Role | Where to look |
+| --- | --- | --- |
+| `demo-cliente` | Client (Marina) | Commissions A–F: select artists, review deliveries, download |
+| `demo-artista-iara` | Artist | A: application; B: pending offer (accept or decline); D: delivery in review |
+| `demo-artista-tomas` | Artist | B: backup queue; C: waiting for Pix; E: approved |
+| `demo-artista-bento` | Artist | A: application; F: disputed delivery |
+| `demo-revisor` | Platform reviewer | F: AI flag to decide |
+
+Run `npm run demo:seed` again at any time to restore the same starting state.
+Seeded payments are labelled "Pagamento de demonstração — sem cobrança no
+provedor": no provider charge exists for them. The steps below explain each part.
 
 ## Run locally
 

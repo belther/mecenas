@@ -1,0 +1,106 @@
+MECENAS — VÍDEO FINAL DE DEMONSTRAÇÃO (3 MINUTOS)
+Versão: 2026-11-25 (iteração 008). Base: SPEC.md §8 e os dados fictícios de `npm run demo:seed`.
+Quem grava: Ricardo (Nabo). Onde: localhost:3000 com o Convex de desenvolvimento.
+Os tempos são estimativas. Mire em 2:45 na leitura de teste, para ter folga.
+
+REGRA DE HONESTIDADE (SPEC §6)
+- Os pagamentos semeados são de demonstração. A tela mostra
+  "Pagamento de demonstração — sem cobrança no provedor". Não diga que é um Pix real.
+- O repasse ao artista é simulado. Não diga "escrow" nem "dinheiro custodiado".
+- Na produção, o dinheiro ficaria com um provedor de custódia licenciado.
+
+=====================================================================
+PREPARAÇÃO (antes de gravar)
+=====================================================================
+1. Restaure os dados:              npm run demo:seed
+2. Confirme MECENAS_REVIEWER_USER_ID (o comando que o seed imprime).
+3. Senha das contas: arquivo .env.demo (não mostre na tela).
+4. Abra cinco janelas anônimas ou perfis do navegador, um por conta, já logados:
+   demo-cliente (Marina), demo-artista-iara (Iara), demo-artista-tomas (Tomás),
+   demo-artista-bento (Bento), demo-revisor (Revisão).
+5. Janela com 1280 px de largura e zoom 100%. Esconda favoritos e extensões.
+6. Os passos 3 a 6 do roteiro mudam os dados. Para regravar, rode o seed de
+   novo e faça login outra vez.
+
+Encomendas semeadas (todas fictícias):
+  A  Capa para zine de poesia urbana ........ aberta; Iara e Bento se candidataram
+  B  Pôster para festa junina do bairro ..... oferta para Iara; Tomás na fila de reserva
+  C  Rótulo ilustrado para café especial .... aceita; aguarda Pix (precisa das chaves de sandbox)
+  D  Retrato ilustrado da cachorra Pipoca ... paga (demo); versão 1 em avaliação
+  E  Mapa ilustrado da feira de domingo ..... paga (demo); versão 2 aprovada; download e licença
+  F  Mascote para feira de ciências ......... paga (demo); versão 1 contestada (uso de IA)
+
+=====================================================================
+ROTEIRO E LISTA DE TOMADAS
+=====================================================================
+
+1. O PROBLEMA — 0:00 a 0:20 — VOCÊ NA CÂMERA
+   Fala:
+   "Uma ilustradora faz um 'teste' de graça para um cliente. Passa a noite
+   desenhando. O cliente some, e ela não recebe nada. Isso acontece todo dia
+   com artistas independentes no Brasil. O Mecenas existe para isso não
+   acontecer: você encomenda, o artista recebe."
+
+2. O PEDIDO — 0:20 a 0:40 — TELA: Marina, página inicial do ateliê
+   Tomada: mostre o formulário "Conte sua ideia" (título, descrição, valor por
+   artista, imagens de referência). Não publique; corte para a lista de encomendas.
+   Fala:
+   "A cliente descreve a ideia, envia referências e define o preço por artista.
+   Cinquenta reais cada, não cinquenta divididos. E a plataforma não cobra taxa
+   do artista."
+
+3. CANDIDATURAS E FILA DE RESERVA — 0:40 a 1:05 — TELA: Marina, encomenda A
+   Tomada: "Ver candidaturas" em A. Mostre Iara e Bento, com o histórico de
+   cada um. Escolha Iara para a oferta e coloque Bento na fila de reserva. Salve.
+   Fala:
+   "Os artistas só se candidatam. Ninguém desenha antes de uma oferta aceita.
+   A cliente escolhe uma artista e monta uma fila de reserva."
+
+4. RECUSA MOVE A OFERTA — 1:05 a 1:25 — TELA: Iara, depois Tomás (encomenda B)
+   Tomada: na janela da Iara, abra B, clique em "Recusar oferta" e depois em "Confirmar recusa". Troque para a
+   janela do Tomás e mostre que a oferta de B chegou para ele, com prazo de 24 horas.
+   Fala:
+   "Cada oferta vale por 24 horas. Se a artista recusa, ou o prazo acaba,
+   a oferta passa sozinha para o próximo da fila."
+
+5. ACEITE E PAGAMENTO — 1:25 a 1:45 — TELA: Tomás aceita B; depois Iara, encomenda D
+   Tomada: Tomás clica em "Aceitar oferta". Corte para a Iara na encomenda D e
+   mostre o selo "Pagamento de demonstração — sem cobrança no provedor".
+   Fala:
+   "Quando o artista aceita, a cliente paga por Pix, e o trabalho só começa
+   depois da confirmação. Aqui o pagamento é simulado: o app registra o valor
+   como reservado, sem custódia real. Em produção, um provedor licenciado
+   guardaria o dinheiro."
+   (Se as chaves de sandbox estiverem configuradas antes da gravação: use a
+   encomenda C e mostre o QR Code de teste no lugar do selo.)
+
+6. ENTREGA E REVISÃO — 1:45 a 2:15 — TELA: Marina, encomenda D
+   Tomada: mostre a prévia com marca d'água e as imagens de processo. Peça uma
+   revisão com um comentário curto. Mostre o prazo de 72 horas.
+   Fala:
+   "Toda entrega vem com uma prévia com marca d'água e imagens do processo.
+   A cliente tem duas revisões. Ela pode aprovar, pedir revisão ou contestar
+   uso de IA."
+
+7. APROVAÇÃO, ARQUIVO E LICENÇA — 2:15 a 2:35 — TELA: Marina, encomenda E
+   Tomada: mostre a linha "Entrega aprovada pelo cliente. R$ 200,00 · repasse
+   simulado.", depois
+   "Baixar ilustração" e "Baixar licença".
+   Fala:
+   "Aprovada a versão final, o valor vai para o artista. Aqui o repasse é
+   simulado. A cliente baixa o arquivo completo com uma licença escrita: o que
+   ela pode e o que não pode fazer com a ilustração."
+
+8. IA E SILÊNCIO — 2:35 a 3:00 — TELA: Revisão, encomenda F; depois você na câmera
+   Tomada: na janela da Revisão, mostre a contestação de F com a prévia e o
+   processo. Não precisa decidir na gravação.
+   Fala:
+   "Se a cliente desconfia de IA, quem decide é uma revisão humana da
+   plataforma, nunca um detector automático. E se a cliente some, em 72 horas
+   a entrega é aprovada sozinha. Com o Mecenas, o artista sempre recebe."
+
+=====================================================================
+DEPOIS DE GRAVAR
+=====================================================================
+- Rode `npm run demo:seed` para restaurar os dados.
+- Envie o vídeo no painel do Hack Brasil até 30/11, antes das 23:59 (Brasília).

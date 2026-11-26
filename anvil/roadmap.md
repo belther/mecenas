@@ -12,7 +12,7 @@ See [product](product.md) for scope and durable decisions and [SPEC Â§10](../S
 | [005](iterations/005-offer-review-deadlines/review.html) | 24-hour offer expiry and 72-hour automatic approval of the current eligible delivery version (R3/R8). | [Verified locally](iterations/005-offer-review-deadlines/evidence/verification.md) and [reviewed](iterations/005-offer-review-deadlines/evidence/recheck.json), 2026-11-24. Hosted rollout pending. |
 | [006](iterations/006-disputes-refunds-reputation/review.html) | AI flag, platform review, sandbox refund and factual reputation (R9/Â§4). | [Implemented and verified locally](iterations/006-disputes-refunds-reputation/evidence/verification.md). Actual sandbox refund pending development payment configuration. |
 | [007](iterations/007-demo-data-walkthrough/spec.md) | Synthetic demo data and end-to-end fixes; blind ratings deferred. | [Implemented and verified locally](iterations/007-demo-data-walkthrough/verification.md), 2026-11-25. Seeded on Convex development only. |
-| 008 | Interface polish, final demonstration video and reproducible setup documentation. | Planned. |
+| [008](iterations/008-polish-video-setup/spec.md) | Interface polish, final demonstration video script and reproducible setup documentation. | [Implemented and verified locally](iterations/008-polish-video-setup/verification.md), 2026-11-25. Video recording by Nabo pending. |
 | 009 | Submission checks, buffer and final delivery before the freeze. | Planned. |
 
 The initial idea-presentation video and sponsor-credit review can proceed separately from iteration 001. No real-money payment, paid plan or release upgrade is implied by this roadmap.

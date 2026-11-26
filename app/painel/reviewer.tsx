@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
 import { api } from '../../convex/_generated/api';
 import { DeliveryImage } from './deliveries';
@@ -9,12 +9,10 @@ import { Feedback, message } from './feedback';
 
 type Case = NonNullable<FunctionReturnType<typeof api.disputes.queue>>[number];
 
-export function ReviewerQueue() {
-  const cases = useQuery(api.disputes.queue, {});
-  if (!cases) return null;
-  return <section aria-label="Revisão da plataforma">
-    <h2>Revisão da plataforma</h2>
-    {cases.length ? cases.map(record => <ReviewCase key={record.id} record={record} />) : <p>Nenhuma contestação pendente.</p>}
+export function ReviewerQueue({ cases }: { cases: Case[] }) {
+  return <section className="reviewer-queue" aria-labelledby="reviewer-queue-title">
+    <h2 id="reviewer-queue-title">Revisão da plataforma</h2>
+    {cases.length ? cases.map(record => <ReviewCase key={record.id} record={record} />) : <p className="empty">Nenhuma contestação pendente.</p>}
   </section>;
 }
 

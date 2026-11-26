@@ -14,6 +14,7 @@ import { ApplyButton, ArtistApplications, ClientApplicationReview } from './appl
 import { ReviewerQueue } from './reviewer';
 import { Reputation } from './reputation';
 import { Feedback, message } from './feedback';
+import { workspaceView } from '../../lib/workspace-view';
 
 type Profile = NonNullable<FunctionReturnType<typeof api.profiles.me>>;
 type RequestRow = FunctionReturnType<typeof api.requests.mine>[number];
@@ -37,8 +38,10 @@ function Account() {
     return !reviewDirty.current || window.confirm('A seleção tem alterações sem salvar. Sair da revisão?');
   }
   async function leave() { if (!confirmReviewExit()) return; setPending(true); setError(''); try { await signOut(); } catch { setError('Não foi possível sair. Tente novamente.'); } finally { setPending(false); } }
-  if (profile === undefined) return <p role="status">Carregando seu perfil…</p>;
-  return <><div className="workspace-heading"><div><p className="eyebrow">SEU ATELIÊ</p><h1>{profile ? `Olá, ${profile.displayName}.` : 'Como você chega por aqui?'}</h1>{profile && <p>{profile.role === 'artist' ? 'Seu portfólio, novas ideias e espaço para criar.' : 'Dê forma à sua próxima encomenda.'}</p>}</div><div className="actions">{profile && <button className="secondary" onClick={() => { if (editing || confirmReviewExit()) setEditing(!editing); }}>{editing ? 'Voltar às encomendas' : 'Editar perfil'}</button>}<button className="quiet" disabled={pending} onClick={leave}>{pending ? 'Saindo…' : 'Sair'}</button></div></div><Feedback error={error} /><ReviewerQueue />{profile && <Reputation profileId={profile._id} />}{!profile || editing ? <ProfileForm key={profile?._id || 'new'} profile={profile} onSaved={() => setEditing(false)} /> : profile.role === 'client' ? <Suspense fallback={<p role="status">Carregando encomendas…</p>}><ClientRequests reviewDirty={reviewDirty} /></Suspense> : <ArtistRequests />}</>;
+  const reviewerCases = useQuery(api.disputes.queue, {}); const view = workspaceView(profile, reviewerCases);
+  if (view === 'loading' || profile === undefined) return <p role="status">Carregando seu perfil…</p>;
+  if (view === 'reviewer') return <><div className="workspace-heading"><div><p className="eyebrow">REVISÃO DA PLATAFORMA</p><h1>{profile ? `Olá, ${profile.displayName}.` : 'Olá.'}</h1><p>Contestações de uso de IA aguardando decisão. Você não decide encomendas em que participa.</p></div><div className="actions"><button className="quiet" disabled={pending} onClick={leave}>{pending ? 'Saindo…' : 'Sair'}</button></div></div><Feedback error={error} /><ReviewerQueue cases={reviewerCases ?? []} /></>;
+  return <><div className="workspace-heading"><div><p className="eyebrow">SEU ATELIÊ</p><h1>{profile ? `Olá, ${profile.displayName}.` : 'Como você chega por aqui?'}</h1>{profile && <p>{profile.role === 'artist' ? 'Seu portfólio, novas ideias e espaço para criar.' : 'Dê forma à sua próxima encomenda.'}</p>}</div><div className="actions">{profile && <button className="secondary" onClick={() => { if (editing || confirmReviewExit()) setEditing(!editing); }}>{editing ? 'Voltar às encomendas' : 'Editar perfil'}</button>}<button className="quiet" disabled={pending} onClick={leave}>{pending ? 'Saindo…' : 'Sair'}</button></div></div><Feedback error={error} />{profile && <Reputation profileId={profile._id} />}{!profile || editing ? <ProfileForm key={profile?._id || 'new'} profile={profile} onSaved={() => setEditing(false)} /> : profile.role === 'client' ? <Suspense fallback={<p role="status">Carregando encomendas…</p>}><ClientRequests reviewDirty={reviewDirty} /></Suspense> : <ArtistRequests />}</>;
 }
 function ProfileForm({ profile, onSaved }: { profile: Profile | null; onSaved: () => void }) {
   const [role, setRole] = useState<'artist' | 'client'>(profile?.role || 'artist'); const [name, setName] = useState(profile?.displayName || ''); const [bio, setBio] = useState(profile?.bio || ''); const [images, setImages] = useState<Image[]>(profile?.portfolioUploadIds.map((id, i) => ({ id, url: profile.images[i] })) || []);
