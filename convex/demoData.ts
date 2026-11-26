@@ -87,7 +87,9 @@ export const prepare = internalMutation({
       if (!userId) { userId = await createDemoAccount(ctx, account.username, password) as Id<'users'>; created++; }
       else {
         const check = await ctx.runMutation(components.authPassword.public.verifyPassword, { userId, password });
-        if (check.success !== true) fail(`A senha de demonstração não confere com a conta ${account.username}. Use a senha original (.env.demo) ou uma implantação nova.`);
+        // 009: Convex Auth allows 5 password checks per account, then 1 per minute; say so instead of blaming the password.
+        if (check.success !== true && check.userError?.error === 'RATE_LIMITED') fail(`Muitas entradas recentes na conta ${account.username}. Aguarde alguns minutos e rode o seed de novo (com a senha original da conta).`);
+        if (check.success !== true) fail(`A senha de demonstração não confere com a conta ${account.username}. Use a senha original (.env.demo, ou .env.demo.production em produção) ou uma implantação nova.`);
       }
       const fields = { role: account.role, displayName: account.displayName, bio: account.bio, portfolioStorageIds: [], portfolioUploadIds: [] };
       const existing = await ctx.db.query('profiles').withIndex('by_user', q => q.eq('userId', userId)).unique();

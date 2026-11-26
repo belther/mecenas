@@ -16,8 +16,11 @@ approval, licence download, human review of AI flags, and factual reputation.
 It is verified locally against a Convex **development** deployment, with a
 reproducible synthetic demo (`npm run demo:seed`).
 
-- The public site https://mecenas-azure.vercel.app/painel still serves
-  iteration 001 (accounts, profiles and requests). See [release evidence](docs/deployment-001.md).
+- The public site https://mecenas-azure.vercel.app serves the current version
+  (deployed 2026-11-26) with demo commissions A–F. Payments are off there: the
+  commission waiting for Pix shows a note, and seeded payments are labelled
+  demo payments. The demo password is given only in the Hack Brasil
+  submission form, never in this repository.
 - Payout to the artist is **simulated**. The sandbox showed that a refund does not
   reverse a subaccount split, so no real escrow is claimed ([SPEC §6](SPEC.md#6-payments-abacatepay-test-mode)).
   Production would need a licensed escrow provider.
@@ -69,6 +72,9 @@ needed to explore the demo. Run each command from the repository root.
 | `demo-revisor` | Platform reviewer | F: AI flag to decide |
 
 Run `npm run demo:seed` again at any time to restore the same starting state.
+Convex Auth allows about 5 password checks per account in a row, then 1 per
+minute. If sign-in says "Muitas tentativas", or the seed reports many recent
+entries, wait a few minutes.
 Seeded payments are labelled "Pagamento de demonstração — sem cobrança no
 provedor": no provider charge exists for them. The steps below explain each part.
 
@@ -180,6 +186,11 @@ starting state; it replaces only the commissions it created.
 - The script refuses any deployment that is not `dev:` or `local:`.
 - To open **Revisão da plataforma** as `demo-revisor`, set
   `MECENAS_REVIEWER_USER_ID` to the ID that the script prints.
+- **Production (owner approval only).** `node scripts/demo-seed.mjs --production`
+  seeds the production deployment of the same Convex project. It keeps its own
+  password in the ignored file `.env.demo.production` and prints the
+  `npx convex env set --prod MECENAS_REVIEWER_USER_ID …` line. Production has no
+  payment settings, so the app shows a note instead of the Pix button.
 - **Seeded payments are not payments.** No AbacatePay charge exists for them. The
   app labels them "Pagamento de demonstração — sem cobrança no provedor" and never
   calls the provider for them. An upheld dispute on a seeded payment ends as a

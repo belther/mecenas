@@ -2,6 +2,7 @@ import { query, mutation, type QueryCtx } from './_generated/server';
 import type { Doc } from './_generated/dataModel';
 import { v } from 'convex/values';
 import { fail, ownedUploads, requireProfile, validateRequest } from './lib/access';
+import { requestStage, type OfferFacts } from '../lib/commission-stage';
 async function project(ctx: QueryCtx, r: Doc<'requests'>) {
   return { _id: r._id, title: r.title, description: r.description, artType: r.artType, pricePerArtistCents: r.pricePerArtistCents,
     artistSlots: r.artistSlots, status: r.status, exampleUploadIds: r.exampleUploadIds,
@@ -30,9 +31,27 @@ export const publish = mutation({ args: { id: v.id('requests') }, handler: async
   if (uploads.length !== row.exampleStorageIds.length || uploads.some((upload, index) => upload.storageId !== row.exampleStorageIds[index])) fail('As imagens do rascunho não correspondem aos arquivos autorizados. Salve o rascunho novamente.');
   await ctx.db.patch(id, { status: 'open' }); return null;
 } });
+/** The client's view of where each commission stands (iteration 009). Only pending and accepted offers count. */
+async function stage(ctx: QueryCtx, r: Doc<'requests'>) {
+  if (r.status === 'draft') return undefined;
+  const facts: OfferFacts[] = [];
+  for (const status of ['pending', 'accepted'] as const) {
+    const offers = await ctx.db.query('offers').withIndex('by_request_status', q => q.eq('requestId', r._id).eq('status', status)).collect();
+    facts.push(...await Promise.all(offers.map(async offer => {
+      const [funded, delivery, dispute] = await Promise.all([
+        ctx.db.query('paymentAttempts').withIndex('by_offer_phase', q => q.eq('offerId', offer._id).eq('phase', 'funded')).first(),
+        ctx.db.query('deliveries').withIndex('by_offer', q => q.eq('offerId', offer._id)).order('desc').first(),
+        ctx.db.query('disputes').withIndex('by_offer', q => q.eq('offerId', offer._id)).order('desc').first(),
+      ]);
+      return { offer: status, funded: !!funded, delivery: delivery?.phase, dispute: dispute?.status };
+    })));
+  }
+  return requestStage(facts);
+}
 export const mine = query({ args: {}, handler: async ctx => {
   const client = await requireProfile(ctx, 'client');
-  return Promise.all((await ctx.db.query('requests').withIndex('by_client', q => q.eq('clientId', client._id)).order('desc').collect()).map(r => project(ctx, r)));
+  return Promise.all((await ctx.db.query('requests').withIndex('by_client', q => q.eq('clientId', client._id)).order('desc').collect())
+    .map(async r => ({ ...await project(ctx, r), stage: await stage(ctx, r) })));
 } });
 export const browse = query({ args: {}, handler: async ctx => {
   await requireProfile(ctx, 'artist');

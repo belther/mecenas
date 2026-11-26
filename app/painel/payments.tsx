@@ -7,17 +7,24 @@ import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { Feedback, message } from './feedback';
 import { DeliveryPanel } from './deliveries';
+import { PIX_UNAVAILABLE } from '../../lib/pix-config';
 
 const formatExpiry = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo',
 });
 
 export const DEMO_PAYMENT = 'Pagamento de demonstração — sem cobrança no provedor.';
+const DEMO_REFUNDED = 'Pagamento de demonstração reembolsado — sem cobrança no provedor.';
+
+function fundedLabel(payment: { demo?: true; refunded?: true; refundPending?: true }) {
+  if (payment.refunded) return payment.demo ? DEMO_REFUNDED : 'Pagamento de teste reembolsado ao cliente.';
+  if (payment.refundPending) return 'Contestação acolhida. Reembolso de teste em andamento.';
+  return payment.demo ? DEMO_PAYMENT : 'Pagamento de teste confirmado.';
+}
 
 export function ArtistPaymentStatus({ offerId }: { offerId: Id<'offers'> }) {
   const payment = useQuery(api.payments.view, { offerId });
-  return <>{payment?.phase === 'funded'
-    ? 'demo' in payment ? DEMO_PAYMENT : 'Pagamento de teste confirmado.'
+  return <>{payment?.phase === 'funded' ? fundedLabel(payment)
     : 'Oferta aceita. Aguarde a confirmação do pagamento para começar.'}</>;
 }
 
@@ -54,10 +61,13 @@ export function ClientPayment({ offerId }: { offerId: Id<'offers'> }) {
 
   if (!payment) return <p role="status">Consultando pagamento…</p>;
   if (payment.phase === 'funded') return <>
-    <p className="application-state" role="status">{'demo' in payment ? DEMO_PAYMENT : 'Pagamento de teste confirmado'}</p>
+    <p className="application-state" role="status">{fundedLabel(payment)}</p>
     <DeliveryPanel offerId={offerId} role="client" />
   </>;
 
+  if ('pixUnavailable' in payment && (payment.phase === 'awaitingPayment' || payment.phase === 'replaceable')) {
+    return <p className="application-state pix-unavailable" role="status">{PIX_UNAVAILABLE}</p>;
+  }
   const canStart = payment.phase === 'awaitingPayment' || payment.phase === 'replaceable';
   const instructions = 'pixCode' in payment ? payment : null;
   return <div className="pix-payment">

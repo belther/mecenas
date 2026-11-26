@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 import { internalMutation, internalQuery, query, type QueryCtx } from './_generated/server';
 import type { Doc, Id } from './_generated/dataModel';
 import { fail, requireProfile } from './lib/access';
+import { pixConfigured } from '../lib/pix-config';
 
 const offerId = v.id('offers');
 const charge = v.object({
@@ -40,12 +41,19 @@ export const view = query({
     const paid = await funded(ctx, offerId);
     // `demo` appears only on seeded demo payments, so real payment views keep their exact shape.
     const demo = paid?.demo ? { demo: true as const } : {};
-    if (profile.role === 'artist') return paid ? { phase: 'funded' as const, ...demo } : { phase: 'awaitingPayment' as const };
+    // `refunded` / `refundPending` appear only after an upheld flag, so the label stops saying "confirmado".
+    const dispute = paid && await ctx.db.query('disputes').withIndex('by_offer', q => q.eq('offerId', offerId)).order('desc').first();
+    const refunded = dispute?.status === 'refunded' ? { refunded: true as const }
+      : dispute?.status === 'refundPending' ? { refundPending: true as const } : {};
+    if (profile.role === 'artist') return paid ? { phase: 'funded' as const, ...demo, ...refunded } : { phase: 'awaitingPayment' as const };
     const identity = await ctx.db.query('paymentIdentities').withIndex('by_client', q => q.eq('clientId', profile._id)).unique();
     const attempt = paid ?? await latest(ctx, offerId);
+    const unavailable = !paid && !pixConfigured() ? { pixUnavailable: true as const } : {};
     return {
       phase: attempt?.phase ?? 'awaitingPayment' as const,
       ...demo,
+      ...refunded,
+      ...unavailable,
       requiresCpf: !identity,
       expiresAt: attempt?.phase === 'awaitingPix' ? attempt.expiresAt : undefined,
       pixCode: attempt?.phase === 'awaitingPix' ? attempt.pixCode : undefined,

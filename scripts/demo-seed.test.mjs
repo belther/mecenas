@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkOverrides, checkTarget, demoPassword } from './demo-seed.mjs';
+import { checkOverrides, checkTarget, demoPassword, parseMode, PRODUCTION_DEMO_FILE } from './demo-seed.mjs';
 
 test('demo seed accepts only development or local deployments', () => {
   assert.equal(checkTarget('dev:successful-fennec-849 # team: x'), 'dev:successful-fennec-849');
@@ -25,4 +25,15 @@ test('demo seed refuses production deploy keys and self-hosted overrides', () =>
   checkOverrides({}, { CONVEX_DEPLOY_KEY: '' }, { CONVEX_DEPLOY_KEY: 'dev:successful-fennec-849|x' });
   assert.throws(() => checkOverrides({ CONVEX_DEPLOY_KEY: 'prod:happy-otter-1|x' }), /non-development/);
   assert.throws(() => checkOverrides({}, { CONVEX_SELF_HOSTED_URL: 'http://127.0.0.1:3210' }), /Self-hosted/);
+});
+
+test('production needs the explicit flag and never takes the password from the environment', () => {
+  assert.equal(parseMode([]), 'development');
+  assert.equal(parseMode(['--production']), 'production');
+  for (const args of [['--prod'], ['production'], ['--production', '--force']]) assert.throws(() => parseMode(args), /Unknown argument/);
+  const files = new Map();
+  const fs = { existsSync: f => files.has(f), readFileSync: f => files.get(f), writeFileSync: (f, t) => files.set(f, t) };
+  const generated = demoPassword({ MECENAS_DEMO_PASSWORD: 'development-value' }, PRODUCTION_DEMO_FILE, fs);
+  assert.notEqual(generated, 'development-value');
+  assert.ok(files.has(PRODUCTION_DEMO_FILE));
 });

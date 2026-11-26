@@ -1,5 +1,7 @@
 // Fills a Convex DEVELOPMENT deployment with the iteration 007 synthetic demo data.
 // Usage: npm run demo:seed   (after `npx convex dev` has configured .env.local)
+// Production: node scripts/demo-seed.mjs --production   (only with Nabo's approval; iteration 009).
+// It targets the production deployment of the same project and keeps its own password file.
 // The demo password comes from MECENAS_DEMO_PASSWORD, or from the ignored file .env.demo,
 // which this script creates with a random value on the first run. It is never printed.
 import { spawnSync } from 'node:child_process';
@@ -11,6 +13,13 @@ import { fileURLToPath } from 'node:url';
 import { parseEnv } from 'node:util';
 
 export const DEMO_FILE = '.env.demo';
+export const PRODUCTION_DEMO_FILE = '.env.demo.production';
+
+/** Production is reached only by the explicit --production flag; any other argument is refused. */
+export function parseMode(args) {
+  for (const arg of args) if (arg !== '--production') throw new Error(`Unknown argument: ${arg}. The only option is --production.`);
+  return args.includes('--production') ? 'production' : 'development';
+}
 
 /** Only development or local deployments may receive demo data (production needs separate approval). */
 export function checkTarget(deployment) {
@@ -31,7 +40,8 @@ export function checkOverrides(...sources) {
 }
 
 export function demoPassword(env, file = DEMO_FILE, fs = { existsSync, readFileSync, writeFileSync }) {
-  let password = env.MECENAS_DEMO_PASSWORD;
+  // The production password never comes from the environment, so a development value cannot leak into production.
+  let password = file === PRODUCTION_DEMO_FILE ? undefined : env.MECENAS_DEMO_PASSWORD;
   if (!password && fs.existsSync(file)) password = parseEnv(fs.readFileSync(file, 'utf8')).MECENAS_DEMO_PASSWORD;
   if (!password) {
     password = randomBytes(15).toString('base64url');
@@ -42,10 +52,14 @@ export function demoPassword(env, file = DEMO_FILE, fs = { existsSync, readFileS
 }
 
 function main() {
+  const production = parseMode(process.argv.slice(2)) === 'production';
+  const passwordFile = production ? PRODUCTION_DEMO_FILE : DEMO_FILE;
   const local = existsSync('.env.local') ? parseEnv(readFileSync('.env.local', 'utf8')) : {};
+  // The development name identifies the project; --prod then selects that project's production deployment.
   const deployment = checkTarget(process.env.CONVEX_DEPLOYMENT || local.CONVEX_DEPLOYMENT);
   checkOverrides(process.env, local);
-  const password = demoPassword(process.env);
+  const password = demoPassword(process.env, passwordFile);
+  const target = production ? `the production deployment of the project of ${deployment}` : deployment;
   // A deploy key in the environment would override the target, so the child gets only the dev name.
   const dir = mkdtempSync(join(tmpdir(), 'mecenas-demo-'));
   const envFile = join(dir, 'target.env');
@@ -54,16 +68,16 @@ function main() {
   for (const key of ['CONVEX_DEPLOYMENT', 'CONVEX_DEPLOY_KEY', 'CONVEX_SELF_HOSTED_URL', 'CONVEX_SELF_HOSTED_ADMIN_KEY', 'MECENAS_DEMO_PASSWORD']) delete env[key];
   try {
     const result = spawnSync(process.execPath, ['node_modules/convex/bin/main.js', 'run', 'demoSeed:run',
-      JSON.stringify({ password }), '--env-file', envFile], { env, encoding: 'utf8', timeout: 180000 });
+      JSON.stringify({ password }), '--env-file', envFile, ...(production ? ['--prod'] : [])], { env, encoding: 'utf8', timeout: 180000 });
     const clean = text => (text || '').replaceAll(password, '[demo password]');
     process.stderr.write(clean(result.stderr));
     if (result.status !== 0) { process.stdout.write(clean(result.stdout)); process.exitCode = result.status ?? 1; return; }
     const summary = JSON.parse(clean(result.stdout));
-    console.log(`Demo data ready on ${deployment}.`);
+    console.log(`Demo data ready on ${target}.`);
     console.log(JSON.stringify(summary.commissions, null, 2));
     if (summary.detachedCommissions) console.log(`${summary.detachedCommissions} earlier demo commission(s) held real data and were kept as ordinary commissions.`);
-    console.log(`Accounts: demo-cliente, demo-artista-iara, demo-artista-tomas, demo-artista-bento, demo-revisor. Password: ${DEMO_FILE}.`);
-    console.log(`To enable the platform review screen for demo-revisor, run:\n  npx convex env set MECENAS_REVIEWER_USER_ID ${summary.reviewerUserId}`);
+    console.log(`Accounts: demo-cliente, demo-artista-iara, demo-artista-tomas, demo-artista-bento, demo-revisor. Password: ${passwordFile}.`);
+    console.log(`To enable the platform review screen for demo-revisor, run:\n  npx convex env set${production ? " --prod" : ""} MECENAS_REVIEWER_USER_ID ${summary.reviewerUserId}`);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

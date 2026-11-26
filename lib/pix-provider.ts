@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { ConvexError } from 'convex/values';
+import { cpfSettings, sandboxKey } from './pix-config';
 
 type Status = 'PENDING' | 'PAID' | 'EXPIRED' | 'CANCELLED';
 type Charge = {
@@ -31,17 +32,15 @@ function equal(expected: string, received: string) {
 }
 
 export function testKey(env = process.env) {
-  const key = env.ABACATEPAY_API_KEY;
-  if (env.ABACATEPAY_TEST_MODE !== 'true' || !key?.startsWith('abc_dev_')) {
-    throw new ConvexError('Pix de teste indisponível nesta configuração.');
-  }
+  const key = sandboxKey(env);
+  if (!key) throw new ConvexError('Pix de teste indisponível nesta configuração.');
   return key;
 }
 
 export function cpfHash(input: string, env = process.env) {
-  const secret = env.MECENAS_CPF_HASH_SECRET;
-  const allowed = env.MECENAS_SYNTHETIC_CPF_HASHES;
-  if (!secret || secret.length < 32 || !allowed) throw new ConvexError('CPF de teste indisponível.');
+  const settings = cpfSettings(env);
+  if (!settings) throw new ConvexError('CPF de teste indisponível.');
+  const { secret, allowed } = settings;
   const value = input.trim();
   if (!/^(\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2})$/.test(value)) {
     throw new ConvexError('Informe um CPF fictício autorizado.');

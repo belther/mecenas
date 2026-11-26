@@ -84,3 +84,7 @@
 .reviewer-queue{max-width:900px}
 .reviewer-queue .delivery-form select{display:block;width:100%;margin-top:9px;border:1px solid #b8c1b4;border-radius:3px;background:#fffef9;padding:12px;font:400 15px/1.5 Arial,sans-serif;color:var(--ink)}
 .workspace-heading .actions>button.quiet:only-child{padding-left:0}
+/* Iteration 009: commission stage chip on the client's list; filled when the client has to act. */
+.workspace .tag.stage{border-color:var(--green);color:var(--green);font-weight:600}
+.workspace .tag.stage.action{background:var(--green);color:#fff}
+.pix-unavailable{line-height:1.6}

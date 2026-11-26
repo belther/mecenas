@@ -88,6 +88,10 @@ test('007 upholding a dispute on a demo payment gives a labelled demo refund wit
   expect(record).toMatchObject({ offerId: f, status: 'open' });
   await reviewer.mutation(api.disputes.decide, { caseId: record.id as Id<'disputes'>, outcome: 'uphold', note: 'Acolhida na demonstração.' });
   expect(await client.query(api.deliveries.mine, { offerId: f })).toMatchObject({ phase: 'rejected', demoPayment: true, dispute: { status: 'refunded' } });
+  // 009: after a refund neither side is told the payment is still confirmed.
+  const bento = await login('bento');
+  for (const actor of [client, bento]) expect(await actor.query(api.payments.view, { offerId: f })).toMatchObject({ phase: 'funded', demo: true, refunded: true });
+  expect((await client.query(api.requests.mine, {})).find(r => r.title === DEMO_COMMISSIONS.F.title)?.stage).toBe('refunded');
   expect(await reviewer.query(api.disputes.queue, {})).toEqual([]);
   const jobs = await t.run(ctx => ctx.db.system.query('_scheduled_functions').collect());
   expect(jobs.some(job => job.name.includes('refunds'))).toBe(false);
@@ -117,4 +121,23 @@ test('007 payment observation ignores a demo attempt', async () => {
   const charge = { providerId: 'forged', amountCents: attempt.amountCents, status: 'PAID' as const };
   expect(await t.mutation(internal.payments.observe, { attemptId: attempt._id, charge, eventId: 'evt-demo' })).toBe(false);
   expect((await t.run(ctx => ctx.db.get(attempt._id)))?.providerId).toBeUndefined();
+});
+
+test('009 the client list shows one stage per commission, and Pix says it is not configured here', async () => {
+  const { login, offer } = await seeded();
+  const client = await login('cliente');
+  const stages = Object.fromEntries((await client.query(api.requests.mine, {})).map(r => [r.title, r.stage]));
+  expect((['A', 'B', 'C', 'D', 'E', 'F'] as const).map(key => stages[DEMO_COMMISSIONS[key].title]))
+    .toEqual([undefined, 'pendingOffer', 'awaitingPayment', 'review', 'approved', 'disputed']);
+  expect(await client.query(api.payments.view, { offerId: await offer('C') })).toMatchObject({ phase: 'awaitingPayment', pixUnavailable: true });
+  expect(await client.query(api.payments.view, { offerId: await offer('D') })).not.toHaveProperty('pixUnavailable');
+  expect(await client.query(api.payments.view, { offerId: await offer('D') })).not.toHaveProperty('refunded');
+});
+
+test('009 a declined offer drops out of the stage; the backup offer shows as sent', async () => {
+  const { login, offer } = await seeded();
+  const client = await login('cliente');
+  const iara = await login('iara');
+  await iara.mutation(api.applications.respond, { offerId: await offer('B'), response: 'decline' });
+  expect((await client.query(api.requests.mine, {})).find(r => r.title === DEMO_COMMISSIONS.B.title)?.stage).toBe('pendingOffer');
 });

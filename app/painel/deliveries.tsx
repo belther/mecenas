@@ -239,7 +239,7 @@ function DeliveryDownloads({ offerId, version, licence }: Version & { licence?: 
   }
 
   return <>
-    <p className="delivery-licence">{licence}</p>
+    {licence && <p className="delivery-licence">{licence}</p>}
     <div className="actions">
       <button type="button" disabled={busy} onClick={original}>{busy ? 'Preparando arquivo…' : 'Baixar ilustração'}</button>
       {licence && <button type="button" className="secondary" onClick={() => download(

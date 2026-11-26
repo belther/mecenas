@@ -517,6 +517,8 @@ test('006 refund survives refusal, lost confirmation and repeat notifications wi
     await f.otherClient.mutation(api.disputes.retryRefund, { caseId });
     await run();
     expect((await f.artist.query(api.deliveries.mine, funded)).dispute?.status).toBe('refundPending');
+    // 009: while the refund is pending, neither side reads "Pagamento de teste confirmado".
+    for (const actor of [f.client, f.artist]) expect(await actor.query(api.payments.view, funded)).toMatchObject({ phase: 'funded', refundPending: true });
     outage = false;
     staleRead = true;
     await f.otherClient.mutation(api.disputes.retryRefund, { caseId });
