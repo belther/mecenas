@@ -166,6 +166,34 @@ contains **demo payments**: records marked `demo: true`, with no provider charge
 labelled in the app and never sent to AbacatePay. They are not evidence of
 any payment, escrow or refund behaviour.
 
+### Webhook and refund checks — 2026-11-26 (Brasília)
+
+Nabo set the five sandbox payment variables on Convex development and registered
+the AbacatePay test-mode webhook (v2, `transparent.completed`). Claude checked the
+variable names only, never the values. No real money moved.
+
+- **Invalid secret:** a POST to the webhook with a wrong secret returned HTTP 401.
+- **Webhook (003):** on seeded commission C, the client generated a test Pix in
+  the app (R$ 120,00, synthetic CPF 111.444.777-35). The sandbox
+  `simulate-payment` call returned HTTP 200 with `devMode=true`. The provider's
+  webhook funded the attempt within 60 seconds; the manual "Verificar pagamento"
+  check was not used. Convex recorded one `funded` payment event. After reload,
+  the client and the artist both saw "Pagamento de teste confirmado".
+- **Refund (006):** the artist delivered, the client flagged AI, and the
+  platform reviewer upheld the flag. The app requested the full refund. The
+  dispute reached `refunded` within 60 seconds, and the client saw "Reembolso de
+  teste confirmado". A separate provider lookup showed the charge as `REFUNDED`,
+  12000 cents, `devMode=true`.
+- **Not done:** a resend of the same webhook event (duplicate replay). The
+  duplicate path is covered by automated tests only.
+- Assumption (a) (artist cannot withdraw outside our API) is still unverified,
+  and the §6 fallback stays: payout remains simulated.
+
+Sanitized facts and screenshots are in ignored `local-evidence/iteration-009-pix/`
+and `local-evidence/iteration-009-refund/`. Afterwards the demo data was reseeded.
+The seed kept the tested commission as an ordinary (non-demo) commission because
+it holds a real sandbox payment, so the client sees two commissions with C's title.
+
 ## 7. Out of scope (hackathon)
 
 Music, physical art, chat, cards/boleto, mobile app, more than one currency, automatic AI detection.

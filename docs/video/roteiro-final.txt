@@ -63,16 +63,17 @@ ROTEIRO E LISTA DE TOMADAS
    "Cada oferta vale por 24 horas. Se a artista recusa, ou o prazo acaba,
    a oferta passa sozinha para o próximo da fila."
 
-5. ACEITE E PAGAMENTO — 1:25 a 1:45 — TELA: Tomás aceita B; depois Iara, encomenda D
-   Tomada: Tomás clica em "Aceitar oferta". Corte para a Iara na encomenda D e
-   mostre o selo "Pagamento de demonstração — sem cobrança no provedor".
+5. ACEITE E PAGAMENTO — 1:25 a 1:45 — TELA: Tomás aceita B; depois Marina, encomenda C
+   Tomada: Tomás clica em "Aceitar oferta". Corte para a Marina na encomenda C:
+   digite o CPF fictício 111.444.777-35 e clique em "Gerar Pix de teste".
+   Mostre o QR Code de teste do AbacatePay.
    Fala:
    "Quando o artista aceita, a cliente paga por Pix, e o trabalho só começa
-   depois da confirmação. Aqui o pagamento é simulado: o app registra o valor
-   como reservado, sem custódia real. Em produção, um provedor licenciado
-   guardaria o dinheiro."
-   (Se as chaves de sandbox estiverem configuradas antes da gravação: use a
-   encomenda C e mostre o QR Code de teste no lugar do selo.)
+   depois da confirmação. Este é um Pix real do modo de teste do AbacatePay:
+   nenhum dinheiro de verdade. A liberação ao artista é simulada; em produção,
+   um provedor de custódia licenciado guardaria o dinheiro."
+   (As chaves de sandbox foram configuradas em 26/11. Sem elas, mostre o selo
+   "Pagamento de demonstração — sem cobrança no provedor" da encomenda D.)
 
 6. ENTREGA E REVISÃO — 1:45 a 2:15 — TELA: Marina, encomenda D
    Tomada: mostre a prévia com marca d'água e as imagens de processo. Peça uma

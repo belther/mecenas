@@ -21,8 +21,9 @@ reproducible synthetic demo (`npm run demo:seed`).
 - Payout to the artist is **simulated**. The sandbox showed that a refund does not
   reverse a subaccount split, so no real escrow is claimed ([SPEC §6](SPEC.md#6-payments-abacatepay-test-mode)).
   Production would need a licensed escrow provider.
-- The end-to-end provider webhook and sandbox refund checks are still pending
-  development payment settings.
+- On development, a real AbacatePay test-mode Pix was funded by the provider
+  webhook, and an upheld AI flag ended in a confirmed sandbox refund (2026-11-26).
+  The demo itself needs no payment keys.
 
 Read [SPEC.md](SPEC.md) for product rules and [AGENTS.md](AGENTS.md) for boundaries.
 
