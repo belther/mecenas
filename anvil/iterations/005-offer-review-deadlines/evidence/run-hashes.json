@@ -1,0 +1,10 @@
+{
+  "iteration-005-red.txt": "aed7af4106017f5f443128e7fbe33002e53482608663b094aacfea682fe53bb6",
+  "iteration-005-build.txt": "6982ea43b2eccfd4b514843b28b0ceeb1fcfd422c9d0ac5635cf8047b2225a03",
+  "iteration-005-suite.txt": "edf72e978b7c93d829cfe7fc8d5c34f4f98b98e9cb09f88315e86dc861619a50",
+  "iteration-005-focused.txt": "62c8f3324d399621b331fba73ca7c1d5491d5bfa36ac8d3911b197a1168de81e",
+  "iteration-005-typecheck.txt": "efb3f3f5733a75396c949ac2bd6d29d5e1fe9d2129b949024d8f6c5744e3174f",
+  "iteration-005-pagination.txt": "5447524b160324056f8874ea263bbb13b6dd15d1c8266db5fb516c3e9248e5e3",
+  "iteration-005-implementation.diff": "087effe36f6f1e890e271b9516a63d20a66ab8fbcf6da7cc35452cec54a1639f",
+  "iteration-005-source-start.zip": "f872ed02fc6e41faf3f8323d0fe1ed4efc09be5fd4314b6e0fefc5f6c2f703d0"
+}

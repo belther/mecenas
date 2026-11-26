@@ -10,8 +10,19 @@
 
 import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
+import type * as deadlines from "../deadlines.js";
+import type * as deliveries from "../deliveries.js";
+import type * as deliveryFileRecords from "../deliveryFileRecords.js";
+import type * as deliveryFiles from "../deliveryFiles.js";
+import type * as disputes from "../disputes.js";
+import type * as refunds from "../refunds.js";
+import type * as reputation from "../reputation.js";
 import type * as health from "../health.js";
+import type * as http from "../http.js";
 import type * as lib_access from "../lib/access.js";
+import type * as lib_delivery from "../lib/delivery.js";
+import type * as payments from "../payments.js";
+import type * as pix from "../pix.js";
 import type * as profiles from "../profiles.js";
 import type * as requests from "../requests.js";
 import type * as uploadRecords from "../uploadRecords.js";
@@ -27,8 +38,19 @@ import type {
 declare const fullApi: ApiFromModules<{
   applications: typeof applications;
   auth: typeof auth;
+  deadlines: typeof deadlines;
+  deliveries: typeof deliveries;
+  deliveryFileRecords: typeof deliveryFileRecords;
+  deliveryFiles: typeof deliveryFiles;
+  disputes: typeof disputes;
+  refunds: typeof refunds;
+  reputation: typeof reputation;
   health: typeof health;
+  http: typeof http;
   "lib/access": typeof lib_access;
+  "lib/delivery": typeof lib_delivery;
+  payments: typeof payments;
+  pix: typeof pix;
   profiles: typeof profiles;
   requests: typeof requests;
   uploadRecords: typeof uploadRecords;

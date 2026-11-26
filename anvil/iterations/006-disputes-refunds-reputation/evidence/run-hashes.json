@@ -1,0 +1,11 @@
+{
+  "iteration-006-baseline.txt": "bd75aac60d01ff909cd7cf53f0870da9fe49005640394bfc5cabc1aaf2b9cf36",
+  "iteration-006-red.txt": "70b7fd2c018b82679bdcf751d771a3f2f2850eb9d0bd9f846995225ce8d59c06",
+  "iteration-006-focused.txt": "8f996547414081c8607269e690226d597a6f4cd47895b74c8d101d0d093abb25",
+  "iteration-006-suite.txt": "d925442563dc97c407db218a895e8490da292b359b60deb8944d2dd019de5428",
+  "iteration-006-build.txt": "da1b9baa29963cae16d838dbcd48dd6a8142268ed2b4c7bc1cb4861401d9839a",
+  "iteration-006-typecheck.txt": "efb3f3f5733a75396c949ac2bd6d29d5e1fe9d2129b949024d8f6c5744e3174f",
+  "iteration-006-browser.txt": "0533a7f9cd5d69fe2d3fefba616f35582d00b3413956a9c1592f325a27f7e9a2",
+  "iteration-006-implementation.diff": "e8695ebdc710ffb45de8479c1b8bd2e0e02f1c83aaea4844b6677e410b97808f",
+  "iteration-006-source-start.zip": "1d9042a88daa84676cc6a0d5b90eb7583aea12d4c68a182c66b7ac2523f71391"
+}

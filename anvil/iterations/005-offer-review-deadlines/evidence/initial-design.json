@@ -1,0 +1,115 @@
+{
+  "basis": [
+    "spec.md",
+    "interfaces.txt"
+  ],
+  "status": "Designed independently; not executed.",
+  "clock": {
+    "offer_window_hours": 24,
+    "review_window_hours": 72,
+    "semantics": "Elapsed server time; use the synthetic clock.",
+    "boundary_delta": "Smallest supported clock increment."
+  },
+  "cases": [
+    {
+      "id": "005-01",
+      "area": "Offer boundary",
+      "exercise": "On separate pending offers, accept and decline immediately before, exactly at, and immediately after the stored deadline. Delay the scheduler.",
+      "expect": "Before the deadline, the response succeeds. At or after it, expiry wins and is recorded distinctly from decline.",
+      "red_check": "Fail if a late response succeeds because the expiry callback has not run."
+    },
+    {
+      "id": "005-02",
+      "area": "Offer response race",
+      "exercise": "Race acceptance and decline separately against expiry; exercise both operation orderings at the deadline.",
+      "expect": "One terminal outcome, consistent with the server deadline. No accepted offer loses its reservation through a stale expiry callback.",
+      "red_check": "Fail on conflicting outcomes, an accepted offer with a promoted replacement, or duplicate reservations."
+    },
+    {
+      "id": "005-03",
+      "area": "Atomic promotion",
+      "exercise": "Expire an offer with an ineligible queue entry followed by an eligible artist; repeat the callback.",
+      "expect": "Expiry, slot release and promotion commit together. The next eligible artist in saved order receives one offer with a full 24-hour window from promotion.",
+      "red_check": "Fail on partial transition, skipped eligible ordering, duplicate promotion, or a replacement deadline inherited from the expired offer."
+    },
+    {
+      "id": "005-04",
+      "area": "Concurrent slots",
+      "exercise": "Expire two slots concurrently with overlapping backup queues; retry both callbacks.",
+      "expect": "No artist is promoted twice and no slot is reserved twice. If no eligible artist remains, the slot becomes selectable.",
+      "red_check": "Fail on duplicate artist promotion, duplicate slot reservation, or an exhausted queue leaving a phantom reservation."
+    },
+    {
+      "id": "005-05",
+      "area": "Review boundary and retry",
+      "exercise": "Publish a funded version. Run its callback immediately before the deadline, at the deadline, and repeatedly afterward. Repeat with first execution delayed until after the deadline.",
+      "expect": "No early release. At or after the deadline, exactly one automatic approval and simulated release occur for the saved funded cents.",
+      "red_check": "Fail on early approval, missed delayed approval, duplicate release, or an amount taken from a later mutable display value."
+    },
+    {
+      "id": "005-06",
+      "area": "Version isolation",
+      "exercise": "Request revision before version V1's deadline, run V1's callback while work is in progress, then publish V2 and run V1's callback again.",
+      "expect": "V1's clock stops. Neither callback approves V2 or releases funds. V2 receives its own full 72-hour window.",
+      "red_check": "Fail if an old callback acts on whichever version happens to be current."
+    },
+    {
+      "id": "005-07",
+      "area": "Revision race",
+      "exercise": "Race revision requests against automatic approval immediately before, exactly at, and after the review deadline.",
+      "expect": "A timely committed revision prevents automatic release. At or after the deadline, automatic approval wins; the late request cannot reverse it or consume a revision.",
+      "red_check": "Fail if both revision and release succeed, or a rejected late request reduces the revision allowance."
+    },
+    {
+      "id": "005-08",
+      "area": "Manual approval race",
+      "exercise": "Approve manually before the deadline, then execute delayed and repeated callbacks. Separately race manual approval with the callback at the deadline.",
+      "expect": "Exactly one approval and release. Early manual approval retains its manual reason; deadline approval records deadline elapsed.",
+      "red_check": "Fail on duplicate settlement, overwritten approval provenance, or a manual result winning at the deadline."
+    },
+    {
+      "id": "005-09",
+      "area": "Release exclusions",
+      "exercise": "Run due and stale callbacks against work in progress, an accepted offer awaiting payment, a superseded version and a delivery held for review.",
+      "expect": "None automatically releases funds or unlocks approval assets.",
+      "red_check": "Fail if a deadline alone is sufficient to trigger release without checking current eligibility."
+    },
+    {
+      "id": "005-10",
+      "area": "Approval access and persistence",
+      "exercise": "Compare automatic and manual approval of equivalent funded deliveries; reload client and artist views.",
+      "expect": "Both paths unlock the same approved original and written licence, preserve the approved version and saved cents, and show the correct approval reason. Original download requires authorization.",
+      "red_check": "Fail on preview-only access, the wrong version's original, missing licence, lost provenance after reload, or unauthorized original access."
+    },
+    {
+      "id": "005-11",
+      "area": "Legacy initialization",
+      "exercise": "Initialize old pending offers and eligible review versions without deadlines at time T0. Repeat initialization at T1, including concurrently.",
+      "expect": "Deadlines are T0 plus 24 or 72 elapsed hours respectively and remain unchanged. Initialization does not immediately expire records because of their historical creation dates.",
+      "red_check": "Fail if repeated initialization extends a window, concurrent initialization produces inconsistent dates, or an old creation date causes immediate expiry."
+    },
+    {
+      "id": "005-12",
+      "area": "Legacy restart and historical records",
+      "exercise": "Interrupt initialization between records, restart later, and inspect expired, declined, accepted and already approved records alongside initialized records.",
+      "expect": "Previously assigned deadlines persist. Remaining eligible records receive a full window when first assigned. Historical outcomes remain unchanged and previous approvals remain readable.",
+      "red_check": "Fail on reset deadlines, terminal records becoming pending, historical settlement replay, or unreadable legacy approvals."
+    },
+    {
+      "id": "005-13",
+      "area": "Deadline presentation",
+      "exercise": "Inspect pending and resolved states on desktop and narrow screens, including after reload and after a deadline passes without a callback.",
+      "expect": "Brazilian Portuguese due date and time identify Brasília time, explain silence, distinguish manual from automatic approval, and disable or resolve late actions consistently with server behavior.",
+      "red_check": "Fail on misleading local-time rendering, hidden deadline information, ambiguous reasons, or a late action appearing successful."
+    }
+  ],
+  "limitations": [
+    "Only the two packet files were read. No implementation, external references, network, collaboration or resources were accessed.",
+    "These are behavioral designs, not executed tests. Scheduler tests, the full suite, typecheck and optimized build remain unverified.",
+    "The spec is a draft: the 24-hour and 72-hour windows and rollout are proposed decisions.",
+    "The interface supplies no callable signatures, concurrency barriers, failure injection, settlement inspection or authorization controls. Race, atomicity and access checks require suitable test hooks.",
+    "The smallest clock increment and the server event that determines whether a request is timely are unspecified. Boundary tests need a defined transaction or decision point.",
+    "Queue eligibility details and cross-slot selection priority are unspecified; checks assert saved order and uniqueness without inventing a tie-breaking policy.",
+    "Eligibility for held legacy deliveries and handling of partially populated legacy metadata need explicit fixtures or clarification."
+  ]
+}

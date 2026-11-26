@@ -1,0 +1,56 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "findings": [
+    {
+      "rank": 1,
+      "severity": "medium",
+      "type": "verification_gap",
+      "location": "final/convex/deadlines.ts.snapshot",
+      "issue": "Legacy initialization tests cover individual records, but not the 32-record pagination boundary, interrupted continuation, or concurrent initialization with participant actions.",
+      "impact": "The bounded rollout implementation is plausible, but the restart and race guarantees in plan step 4 and acceptance check A4 are not fully demonstrated.",
+      "recommendation": "Add synthetic tests with more than 32 eligible records, interrupted continuation, and initialization racing a response or review transition."
+    },
+    {
+      "rank": 2,
+      "severity": "low",
+      "type": "verification_gap",
+      "location": "browser-result.json",
+      "issue": "The browser summary reports two viewport widths and successful downloads, but does not document offer expiry, both participant views after reload, or late-action behavior while callbacks are delayed.",
+      "impact": "This evidence supports the delivery walkthrough, but does not establish all presentation checks in A2 and A5.",
+      "recommendation": "Supply explicit observations or assertions for those remaining browser scenarios."
+    }
+  ],
+  "rationale": {
+    "assessment": "No concrete source defect was established by static inspection. The implementation substantially follows the approved plan.",
+    "byte_verification": [
+      "The spec and plan SHA-256 hashes match approval.md.",
+      "All 12 baseline files match test-baseline.json.",
+      "All 13 entries in final-hashes.json match the supplied final bytes.",
+      "Ten baseline files remain byte-identical in final, including test discovery, dependencies, configuration, scripts, and three test files.",
+      "The two edited test files preserve their original content after accounting for the added internal API import, then append 12 parameter-expanded test cases.",
+      "The independent design hash matches the hash stated in coder-report.md."
+    ],
+    "static_inspection": [
+      "Offer creation and promotion persist and schedule full 24-hour windows atomically. Late responses settle expiry without subsequently throwing away that transition.",
+      "Expiry checks persisted identity, deadline and pending state. Shared promotion logic preserves queue order and reserves only pending or accepted offers.",
+      "Delivery submissions assign fresh 72-hour windows. Revision clears the deadline; callbacks require the current review phase, version, matching deadline and matching funded offer amount.",
+      "Manual and automatic approval share the release transaction. Approved state prevents repeated settlement, and legacy release reasons default to manual.",
+      "Deadline presentation uses Brazilian Portuguese and the Brasília time zone. Existing original-file authorization checks remain intact."
+    ],
+    "supplied_execution_evidence": [
+      "red-run.txt records three failing deadline assertions before implementation.",
+      "focused-run.txt reports 17 passed and 11 skipped tests.",
+      "suite-run.txt reports 2 Node tests and 55 Vitest tests passing.",
+      "build-run.txt reports successful optimized compilation and TypeScript checking.",
+      "browser-result.json reports a synthetic loopback walkthrough at widths 1280 and 390, matching original bytes and a downloaded licence."
+    ]
+  },
+  "limitations": [
+    "I executed byte-hash and content checks only; I did not rerun application tests or the build.",
+    "Execution logs are supplied evidence and do not independently bind their executed source to the final manifest.",
+    "A standalone typecheck log, raw starting-suite result, fresh boundary-probe evidence, and adversarial-pass report are absent. Their completion cannot be independently confirmed.",
+    "The browser harness and detailed assertions are absent.",
+    "The packet contains selected source snapshots rather than a complete runnable repository.",
+    "Review stayed within the restricted packet. No network, accounts, collaboration, generic resources, or vault access was used."
+  ]
+}

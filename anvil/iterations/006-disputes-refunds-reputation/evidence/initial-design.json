@@ -1,0 +1,206 @@
+{
+  "cases": [
+    {
+      "id": "D01",
+      "rule": "Deadline boundary",
+      "setup": "Funded current delivery with deadline T.",
+      "actions": [
+        "Flag at T−1 ms",
+        "Flag at T",
+        "Flag at T+1 ms"
+      ],
+      "expect": [
+        "Before T: freeze review immediately.",
+        "At T: automatic approval wins.",
+        "After T: flag cannot reverse approval."
+      ],
+      "red_check": "Fail if the deadline comparison admits a flag at T, or rejects a valid flag before T."
+    },
+    {
+      "id": "D02",
+      "rule": "Competing transitions",
+      "setup": "Separate copies of a funded delivery immediately before T.",
+      "actions": [
+        "Race flag against revision.",
+        "Race flag against manual approval.",
+        "Race flag against scheduled approval.",
+        "Repeat with reversed commit order."
+      ],
+      "expect": "One consistent transition wins. If the timely flag wins, revision and both approval paths stop; no release occurs.",
+      "red_check": "Fail if both transitions succeed, a held case releases funds, or the stored state contradicts the winning transition."
+    },
+    {
+      "id": "D03",
+      "rule": "Current funded version",
+      "actions": [
+        "Flag a historical version.",
+        "Flag an unfunded delivery.",
+        "Race a flag against replacement of the current version."
+      ],
+      "expect": "Only the current funded delivery can be flagged. A successful case remains attached to the correct version and evidence.",
+      "red_check": "Fail if a stale version identifier freezes or approves a different version."
+    },
+    {
+      "id": "D04",
+      "rule": "Hold and reload",
+      "setup": "A timely flag has succeeded.",
+      "actions": [
+        "Reload separate client and artist sessions.",
+        "Attempt revision, manual approval and scheduled release.",
+        "Request original and licence through normal access paths."
+      ],
+      "expect": "Both participants see the held status. Blocked transitions remain blocked. Original and licence remain locked.",
+      "red_check": "Fail if protection exists only in the screen, disappears after reload, or permits direct file access."
+    },
+    {
+      "id": "D05",
+      "rule": "Private, independent review",
+      "actions": [
+        "Open and decide a case as client, artist, unrelated participant, designated reviewer and participating reviewer.",
+        "Inspect the permitted review evidence."
+      ],
+      "expect": "Only the designated nonparticipating reviewer can decide. Review evidence includes the watermarked preview, process images and client explanation. A ruling records a short explanation; dispute explanations remain private.",
+      "red_check": "Fail if hiding controls is the only authorization check, a participant can decide their own case, or explanations appear publicly."
+    },
+    {
+      "id": "D06",
+      "rule": "Dismissal",
+      "setup": "A held case with more than one delivery version.",
+      "actions": [
+        "Dismiss the flag with an explanation.",
+        "Reload both participant sessions."
+      ],
+      "expect": "The flagged version receives approval, original access, a personal-use licence and simulated artist release.",
+      "red_check": "Fail if dismissal approves the latest version instead of the flagged version, starts a refund, or leaves approval benefits unavailable."
+    },
+    {
+      "id": "D07",
+      "rule": "Upheld flag and access revocation",
+      "actions": [
+        "Uphold a flag.",
+        "Request every delivery version through normal client file paths, including previously known URLs.",
+        "Check licence access and artist access."
+      ],
+      "expect": "Client in-app access to all delivery versions is revoked and no licence is granted. Artist access to their own work remains.",
+      "red_check": "Fail if only the current original is blocked, historical previews remain accessible in-app, or the artist loses their submitted work."
+    },
+    {
+      "id": "F01",
+      "rule": "Verified full refund",
+      "setup": "An upheld case with known test payment and full paid amount.",
+      "actions": [
+        "Start refund.",
+        "Deliver confirmation for another payment.",
+        "Deliver confirmation for a partial amount.",
+        "Deliver valid full-refund confirmation for the matching payment."
+      ],
+      "expect": "Display “Reembolso pendente” until matching full-refund confirmation. Only the valid confirmation completes the refund.",
+      "red_check": "Fail if request acceptance, a partial refund or an unrelated payment confirmation marks the case refunded."
+    },
+    {
+      "id": "F02",
+      "rule": "Recoverable refund failure",
+      "actions": [
+        "Simulate insufficient provider balance.",
+        "Simulate provider failure.",
+        "Restore provider availability and reconcile."
+      ],
+      "expect": "Each failure leaves a recoverable pending case with files locked. Recovery can complete the full refund without release.",
+      "red_check": "Fail if failure unlocks files, marks refund complete, releases funds or makes recovery impossible."
+    },
+    {
+      "id": "F03",
+      "rule": "Lost response and replay",
+      "actions": [
+        "Make provider refund succeed but lose the local response.",
+        "Reconcile before retrying.",
+        "Replay refund requests and duplicate notifications."
+      ],
+      "expect": "Reconciliation recognizes the existing refund. Replays produce no second financial effect.",
+      "red_check": "Fail if a timeout triggers a blind second refund or duplicate notifications change counts or financial outcomes."
+    },
+    {
+      "id": "F04",
+      "rule": "One financial outcome",
+      "actions": [
+        "Submit concurrent uphold and dismiss decisions.",
+        "Repeat the winning decision.",
+        "Attempt approval or release while refund is pending and after confirmation."
+      ],
+      "expect": "One ruling wins consistently. A case can refund or release, never both.",
+      "red_check": "Fail if concurrent decisions produce conflicting terminal states or any execution produces both refund and release."
+    },
+    {
+      "id": "R01",
+      "rule": "Client reputation denominators",
+      "setup": {
+        "same_client_paid_commissions": [
+          "A: legacy, delivered and approved",
+          "B: delivered, repeated revisions, multiple versions, approved",
+          "C: delivered, flag pending",
+          "D: delivered, flag upheld, later refunded",
+          "E: delivered, flag dismissed",
+          "F: paid, no first delivery"
+        ],
+        "excluded_control": "G: unpaid, no delivery"
+      },
+      "expect": {
+        "originally_paid": 6,
+        "revision_rate": {
+          "numerator": 1,
+          "denominator": 5
+        },
+        "ultimately_rejected_rate": {
+          "numerator": 1,
+          "denominator": 5
+        },
+        "flags_raised": 3,
+        "flags_upheld": 1
+      },
+      "red_check": "Fail if refunds reduce originally-paid counts, pending flags count as rejection, undelivered commissions enter rate denominators, or versions and repeated revisions inflate counts."
+    },
+    {
+      "id": "R02",
+      "rule": "Distinct commissions per artist offer",
+      "setup": "One artist has two offers. One offer has a commission with several versions, repeated revisions and replayed events; the other has a separate commission.",
+      "actions": [
+        "Read each offer's reputation before and after event replay."
+      ],
+      "expect": "Each commission counts once in its applicable offer. Events and versions do not multiply counts or leak between offers.",
+      "red_check": "Fail if counting delivery rows or event rows changes reputation."
+    },
+    {
+      "id": "R03",
+      "rule": "Empty states and delivery deadlines",
+      "actions": [
+        "Read rates with zero eligible delivered commissions.",
+        "Read artist on-time availability for legacy commissions without agreed delivery dates.",
+        "Advance the synthetic review clock."
+      ],
+      "expect": "Zero-denominator rates show “Sem histórico”. Artist on-time rate shows “Sem prazo de entrega registrado” while agreed delivery dates are absent. Review deadlines do not substitute for artist delivery dates.",
+      "red_check": "Fail if an empty rate displays 0% or 100%, or the 72-hour review window is used to calculate artist punctuality."
+    },
+    {
+      "id": "R04",
+      "rule": "Visible, private reputation facts",
+      "actions": [
+        "Inspect artist and client profiles and commission/artist selection screens.",
+        "Use desktop and narrow widths in Brazilian Portuguese."
+      ],
+      "expect": "Required counts and separate rates remain readable, rates show numerator and denominator, flags raised and upheld stay distinct, and dispute explanations remain private.",
+      "red_check": "Fail if facts exist only in backend responses, narrow layouts hide denominators, or public reputation exposes explanations."
+    }
+  ],
+  "limitations": [
+    "Read only spec.md and interfaces.txt in the packet. No network, collaboration, external resources or writes were used.",
+    "These are designed checks, not executed tests. The interface lists flows and a synthetic clock but supplies no callable contracts, implementation or test harness.",
+    "The specification is draft revision 0.1 and identifies reviewer access and reputation definitions as awaiting Nabo’s decision.",
+    "Timestamp precision, authoritative clock, transaction ordering and stale-request behavior are unspecified. T−1 ms requires equivalent supported clock precision.",
+    "Artist completed-commission semantics are not defined precisely enough to assign exact counts for legacy, held, dismissed and refunded commissions.",
+    "The on-time formula and behavior for mixed dated and undated commissions are unspecified.",
+    "Reviewer evidence retention and access after client revocation are not fully specified.",
+    "Provider confirmation authenticity, reconciliation mechanism and retry contract are not supplied. Actual sandbox refund behavior requires separate observation; unobserved success must remain pending.",
+    "Browser-displayed images cannot be recalled. Revocation checks cover subsequent in-app access.",
+    "The full suite, typecheck, optimized build and real-screen checks cannot be run from this packet."
+  ]
+}

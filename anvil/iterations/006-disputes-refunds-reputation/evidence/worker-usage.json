@@ -1,0 +1,72 @@
+{
+  "boundary": {
+    "events_sha256": "4222b4eb924a9be3b37c3a19ec37bcce6455d492790ea90d0a748639f96fa0b3",
+    "usage": {
+      "input_tokens": 86050,
+      "cached_input_tokens": 63872,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1000,
+      "reasoning_output_tokens": 0
+    }
+  },
+  "replacement-boundary": {
+    "events_sha256": "20d9bd0920cd5d5b2cf168164f59713c196ca23ce763e4da08f590cb6a35726d",
+    "usage": {
+      "input_tokens": 85795,
+      "cached_input_tokens": 64000,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 954,
+      "reasoning_output_tokens": 0
+    }
+  },
+  "initial-design": {
+    "events_sha256": "0d42ef3dcaefe260c16597e50c30d9af8c064a0433e6df40c77e7b6a94ff04f9",
+    "usage": {
+      "input_tokens": 51651,
+      "cached_input_tokens": 42112,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2272,
+      "reasoning_output_tokens": 35
+    }
+  },
+  "adversarial": {
+    "events_sha256": "27395645d4e743aef202fe39879c39b22980e73baa25bdf23ef40decf8995079",
+    "usage": {
+      "input_tokens": 286303,
+      "cached_input_tokens": 199168,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1485,
+      "reasoning_output_tokens": 288
+    }
+  },
+  "reviewer": {
+    "events_sha256": "e6c63223e03b51561e4637607108e803852498083c87b16d3f7418f02cbce40c",
+    "usage": {
+      "input_tokens": 402644,
+      "cached_input_tokens": 348032,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2469,
+      "reasoning_output_tokens": 591
+    }
+  },
+  "recheck": {
+    "events_sha256": "e89adaeb6db8cdb9c8a22b90d017d3e019bfd8fe8b61be452633f4f6209b0c2a",
+    "usage": {
+      "input_tokens": 256558,
+      "cached_input_tokens": 193792,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1280,
+      "reasoning_output_tokens": 35
+    }
+  },
+  "final-recheck": {
+    "events_sha256": "c23b9cff09d765d19aa84f96c2ba1fcdf976f8968753702ea0da40e6527f5e06",
+    "usage": {
+      "input_tokens": 292762,
+      "cached_input_tokens": 225280,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1506,
+      "reasoning_output_tokens": 88
+    }
+  }
+}

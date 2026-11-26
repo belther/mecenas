@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": [
+    "Owner on desktop and artist on narrow layout: publish, apply, select and accept succeeded.",
+    "Unconfigured development payments failed closed; no QR appeared and the artist stayed awaiting payment after reload."
+  ],
+  "browser": "157.0.8103.79"
+}

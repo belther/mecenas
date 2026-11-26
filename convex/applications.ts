@@ -1,5 +1,7 @@
 import { v } from 'convex/values';
-import { mutation, query, type QueryCtx, type MutationCtx } from './_generated/server';
+import { internal } from './_generated/api';
+import { OFFER_WINDOW } from './lib/windows';
+import { internalMutation, mutation, query, type QueryCtx, type MutationCtx } from './_generated/server';
 import type { Doc, Id } from './_generated/dataModel';
 import { fail, requireProfile } from './lib/access';
 
@@ -19,14 +21,16 @@ function offersWithStatus(ctx: QueryCtx, requestId: Id<'requests'>, status: 'pen
 }
 
 function offerSummary(offer: Doc<'offers'>) {
-  return { id: offer._id, slot: offer.slot, status: offer.status, pricePerArtistCents: offer.pricePerArtistCents };
+  return { id: offer._id, slot: offer.slot, status: offer.status, respondBy: offer.respondBy, pricePerArtistCents: offer.pricePerArtistCents };
 }
 
-function createOffer(ctx: MutationCtx, request: Doc<'requests'>, applicationId: Id<'applications'>, slot: number) {
-  return ctx.db.insert('offers', {
+async function createOffer(ctx: MutationCtx, request: Doc<'requests'>, applicationId: Id<'applications'>, slot: number, pricePerArtistCents = request.pricePerArtistCents): Promise<void> {
+  const respondBy = Date.now() + OFFER_WINDOW;
+  const offerId = await ctx.db.insert('offers', {
     applicationId, requestId: request._id, slot,
-    pricePerArtistCents: request.pricePerArtistCents, status: 'pending',
+    pricePerArtistCents, status: 'pending', respondBy,
   });
+  await ctx.scheduler.runAt(respondBy, internal.applications.expire, { offerId, respondBy });
 }
 
 export const apply = mutation({
@@ -95,7 +99,7 @@ export const forRequest = query({
     return {
       revision: state?.revision ?? 0,
       queue: state?.queue ?? [],
-      reserved: applicants.filter(({ offer }) => offer && offer.status !== 'declined').length,
+      reserved: applicants.filter(({ offer }) => offer?.status === 'pending' || offer?.status === 'accepted').length,
       applicants,
     };
   },
@@ -159,28 +163,43 @@ export const respond = mutation({
     const status = response === 'accept' ? 'accepted' : 'declined';
     if (offer.status !== 'pending') return { status: offer.status } as const;
 
-    const [request, state] = await Promise.all([
-      ctx.db.get(offer.requestId), selection(ctx, offer.requestId),
-    ]);
-    if (!request || request.status !== 'open' || !state) fail('Oferta indisponível.');
+    const outcome = offer.respondBy !== undefined && Date.now() >= offer.respondBy ? 'expired' : status;
+    await finishOffer(ctx, offer, outcome);
+    return { status: outcome } as const;
+  },
+});
 
-    await ctx.db.patch(offerId, { status });
-    let queue = state.queue;
-    if (status === 'accepted') {
-      const accepted = await offersWithStatus(ctx, request._id, 'accepted');
-      if (accepted.length === request.artistSlots) await ctx.db.patch(request._id, { status: 'closed' });
-    } else {
-      for (const [index, id] of queue.entries()) {
-        const backup = await ctx.db.get(id);
-        if (backup?.requestId === request._id && !(await offerFor(ctx, id))) {
-          await createOffer(ctx, request, id, offer.slot);
-          queue = queue.slice(index + 1);
-          break;
-        }
-        if (index === queue.length - 1) queue = [];
+async function finishOffer(ctx: MutationCtx, offer: Doc<'offers'>, status: 'accepted' | 'declined' | 'expired'): Promise<void> {
+  const [request, state] = await Promise.all([
+    ctx.db.get(offer.requestId), selection(ctx, offer.requestId),
+  ]);
+  if (!request || request.status !== 'open' || !state) fail('Oferta indisponível.');
+
+  await ctx.db.patch(offer._id, { status });
+  let queue = state.queue;
+  if (status === 'accepted') {
+    const accepted = await offersWithStatus(ctx, request._id, 'accepted');
+    if (accepted.length === request.artistSlots) await ctx.db.patch(request._id, { status: 'closed' });
+  } else {
+    for (const [index, id] of queue.entries()) {
+      const backup = await ctx.db.get(id);
+      if (backup?.requestId === request._id && !(await offerFor(ctx, id))) {
+        await createOffer(ctx, request, id, offer.slot, offer.pricePerArtistCents);
+        queue = queue.slice(index + 1);
+        break;
       }
+      if (index === queue.length - 1) queue = [];
     }
-    await ctx.db.patch(state._id, { revision: state.revision + 1, queue });
-    return { status } as const;
+  }
+  await ctx.db.patch(state._id, { revision: state.revision + 1, queue });
+}
+
+export const expire = internalMutation({
+  args: { offerId: v.id('offers'), respondBy: v.number() },
+  handler: async (ctx, { offerId, respondBy }): Promise<void> => {
+    const offer = await ctx.db.get(offerId);
+    if (offer?.status === 'pending' && offer.respondBy === respondBy && Date.now() >= respondBy) {
+      await finishOffer(ctx, offer, 'expired');
+    }
   },
 });

@@ -1,0 +1,50 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "findings": [
+    {
+      "rank": 1,
+      "severity": "P2",
+      "title": "Refund retries can overlap an earlier provider request",
+      "locations": [
+        "final/convex/disputes.ts.snapshot:49",
+        "final/convex/disputes.ts.snapshot:92",
+        "final/lib/pix-provider.ts.snapshot:131"
+      ],
+      "evidence": "Static inspection. The retry delay starts when scheduling. After 60 seconds, another run can claim the case even if the previous action remains active. Run numbers guard local completion but do not fence provider calls.",
+      "impact": "An earlier action paused after its PAID lookup can resume after a retry and submit another refund request. Canonical reads reduce replay risk but do not prevent this overlap. A second financial effect is not established by this packet.",
+      "recommendation": "Establish a provider-supported idempotency guarantee or equivalent serialization across retries. Add a synthetic test that pauses the first run after lookup, advances beyond the retry delay, and resumes both runs."
+    },
+    {
+      "rank": 2,
+      "severity": "P2",
+      "title": "Executed checks cover less than the frozen behavioral design",
+      "locations": [
+        "initial-design.json",
+        "final/tests/deliveries.test.ts.snapshot",
+        "browser.test.mjs.snapshot"
+      ],
+      "evidence": "Static comparison with supplied execution results. The competing-transition tests submit flag first and do not explicitly exercise reversed winning orders. Worker interruption and overlapping refund attempts are not exercised. Browser checks mount selected components through a fixture transport rather than the complete authenticated application.",
+      "impact": "Passing results support the tested synthetic flows, but do not establish every planned race, recovery path, or full-screen integration.",
+      "recommendation": "Add deterministic checks for both transition orders and interrupted refund recovery. Keep component walkthrough claims distinct from complete application verification."
+    }
+  ],
+  "rationale": {
+    "identity_checks": [
+      "All 12 baseline snapshots match their SHA-256 entries in test-baseline.json.",
+      "All 19 snapshots listed in final-hashes.json match their recorded hashes.",
+      "Specification and plan bytes match the approval hashes.",
+      "The independent design and browser harness bytes match their recorded hashes."
+    ],
+    "test_edits": "Only deliveries.test.ts and payments.test.ts changed within the baseline test/configuration set. Delivery changes add two imports and append checks; payment changes append a check. Original test bodies remain intact. Package files, discovery configuration, scripts, and other baseline tests are unchanged.",
+    "static_assessment": "Version/payment binding, server-side reviewer authorization, participant conflict checks, atomic verdict persistence, dismissal through the existing release transaction, historical client file denial after rejection, and distinct-commission reputation calculations align with the approved plan.",
+    "supplied_execution": "Logs report baseline passes of 2 Node and 57 Vitest tests, a behavioral red failure, final passes of 2 Node and 66 Vitest tests, successful typecheck/build, and two browser scenarios. These are supplied execution evidence, not reviewer-executed results."
+  },
+  "limitations": [
+    "Review used only the restricted read-only packet. No application tests were executed during this review.",
+    "The required actual sandbox refund remains unobserved. Supplied records report missing payment configuration; browser scenarios explicitly use a provider stub.",
+    "The packet does not establish provider idempotency or concurrent refund behavior.",
+    "The supplied specification has no section 6, so the plan's requested blocker recording there cannot be verified.",
+    "Hashes establish packet identity, not independent proof that supplied logs were produced from those exact bytes.",
+    "Vault retrieval and capture were outside the authorized packet and were not performed."
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "cases": [
+    {
+      "id": "D1",
+      "setup": "Synthetic accepted offers: funded at 5000 cents and unfunded; owning client, selected artist, other client, other artist and anonymous caller.",
+      "action": "Call mine, upload, submit, requestRevision, approve and file read as each caller.",
+      "expected": "Only participants read delivery state; only selected artist uploads/submits for the funded offer; only owning client requests revisions/approves. Unauthorized file reads reject without bytes. Unfunded offers cannot enter delivery/review."
+    },
+    {
+      "id": "D2",
+      "setup": "Funded offer at version 0; valid supported images.",
+      "action": "Stage an original and two process images; submit with expectedVersion 0. Repeat on a separate offer with three process images.",
+      "expected": "Each complete set publishes atomically as version 1 awaiting review, with preview and all process images available to participants."
+    },
+    {
+      "id": "D3",
+      "setup": "Funded offer with a previously readable state.",
+      "action": "Attempt submission with missing original, zero/one/four process images, duplicate process IDs, wrong-kind IDs, another offer's IDs and invalid image inputs; interrupt an upload, then retry valid delivery.",
+      "expected": "Invalid or incomplete sets never become ready. Prior state and files remain available; retry succeeds without extra versions or revision consumption."
+    },
+    {
+      "id": "M1",
+      "setup": "Valid JPEG, PNG and WebP originals with recognizable content; existing image limits supplied by the implementation harness.",
+      "action": "Upload supported images and inputs that violate format, content or size limits.",
+      "expected": "Supported images within existing limits succeed; invalid inputs reject. Generated preview visibly depicts the original, has a visible watermark and reduced dimensions. Original bytes remain unchanged."
+    },
+    {
+      "id": "M2",
+      "setup": "Submitted version awaiting review.",
+      "action": "Inspect client-facing responses; read preview/process/original as both participants and outsiders; attempt cross-offer and staged-file access.",
+      "expected": "Participants can read published preview/process files. Owning client cannot read original before approval. Outsiders receive no delivery files. Client-facing data contains no public storage URLs or original file identifiers before approval; staging IDs remain scoped to the authorized artist."
+    },
+    {
+      "id": "R1",
+      "setup": "Version 1 awaiting review.",
+      "action": "Client requests revision with an instruction; artist submits complete replacement using the current version. Repeat once.",
+      "expected": "Requests attach to versions 1 and 2; replacement submissions become versions 2 and 3. Notes and version history persist. Each request consumes exactly one revision; each replacement requires the full file set."
+    },
+    {
+      "id": "R2",
+      "setup": "A revision has been requested; replacement has not been submitted.",
+      "action": "Request another revision or approve the old delivery; then submit the replacement and review it.",
+      "expected": "Old delivery cannot receive another review decision while replacement is pending. New submitted version becomes reviewable."
+    },
+    {
+      "id": "R3",
+      "setup": "Two revisions consumed; version 3 submitted.",
+      "action": "Request a third revision, then approve version 3.",
+      "expected": "Third request rejects without changing history/count. Approval succeeds for version 3."
+    },
+    {
+      "id": "V1",
+      "setup": "Version 2 awaiting review.",
+      "action": "Approve/requestRevision using version 1; upload/submit using stale expectedVersion.",
+      "expected": "Stale operations cannot change current version, phase, history, revision count, approved version or release records."
+    },
+    {
+      "id": "A1",
+      "setup": "Latest version awaiting review; saved offer amount is 5000 cents.",
+      "action": "Owning client approves that version.",
+      "expected": "Exactly that version becomes approved; exactly one simulated release records 5000 cents. Artist sees approved version and simulated payout amount. Client receives approved original and agreed written licence."
+    },
+    {
+      "id": "A2",
+      "setup": "Approved version with earlier submitted versions.",
+      "action": "Download each version's original as the client; retry approval, revision, upload and submission.",
+      "expected": "Client downloads only approved version's unchanged original. Later actions cannot replace approved version or create another release; unauthorized originals remain inaccessible."
+    },
+    {
+      "id": "P1",
+      "setup": "Revision history followed by approval.",
+      "action": "Reload client and artist sessions and re-read authoritative state through fresh requests.",
+      "expected": "Versions, notes, revision count, phase, approved version, 5000-cent release and stored licence survive reload. Approved download remains available."
+    },
+    {
+      "id": "C1",
+      "setup": "Current version awaiting review; synchronized callers.",
+      "action": "Replay and concurrently issue approvals for the same version.",
+      "expected": "One approval transition and one 5000-cent release maximum. Retries may return existing success or conflict, but approved version and release remain identical."
+    },
+    {
+      "id": "C2",
+      "setup": "Current version awaiting review with revisions remaining.",
+      "action": "Replay and concurrently issue revision requests for the same version.",
+      "expected": "Exactly one request is accepted into history and count increases once. Duplicate calls cannot overwrite the accepted note or consume another revision."
+    },
+    {
+      "id": "C3",
+      "setup": "Two different complete staged sets for the same current version.",
+      "action": "Submit both concurrently and replay the winning submission.",
+      "expected": "Only one next version publishes, containing one coherent file set. No mixed files, skipped version or duplicate publication."
+    },
+    {
+      "id": "C4",
+      "setup": "Current version awaiting review with a revision remaining.",
+      "action": "Race approval against revision request for that version; repeat with reversed scheduling.",
+      "expected": "Exactly one transition wins. Approval implies one release and no revision consumption; revision implies one consumed revision and no release."
+    },
+    {
+      "id": "P2",
+      "setup": "Controlled failure injection around publication and approval persistence.",
+      "action": "Fail a write before completion, then retry through a fresh request.",
+      "expected": "No partial ready delivery or approved state without its corresponding release. Retry yields one coherent committed result and at most one release."
+    },
+    {
+      "id": "U1",
+      "setup": "Synthetic client and artist sessions in the Brazilian Portuguese workspace, desktop and narrow widths.",
+      "action": "Complete delivery, preview/process inspection, two revisions, approval and final download; reload both views.",
+      "expected": "Controls reflect role, phase and revision limit, remain usable at both widths, and show version, notes, simulated amount and approved download correctly. Manual approval needs no expiry timer."
+    }
+  ],
+  "redStrategy": {
+    "baseline": "Use only synthetic fixtures funded through test-only setup. Execute behavioral checks against runnable operations and the workspace.",
+    "observableFailure": "Before implementation, demonstrate missing or rejected valid delivery operations, absent review controls, inaccessible expected files, incorrect persisted state, unauthorized bytes, or incorrect release/count invariants. Missing endpoints count as explicit runtime capability failures.",
+    "avoid": "Do not use unresolved imports, compilation/type errors or deliberately broken tests as red evidence.",
+    "concurrency": "Synchronize competing requests at the transition boundary; inspect authoritative state, history and release count afterward. Exercise both winner orderings.",
+    "verification": "After behavioral checks, run the existing suite, typecheck and optimized build; build failures are separate from behavioral red evidence."
+  },
+  "limitations": [
+    "The supplied spec is draft revision 0.1 and presents licence and execution-path decisions for review; these files alone do not establish approval.",
+    "If the fixed licence is approved, assert personal use and personal-profile display with artist credit, exclusions for commercial use/resale/transfer, retained artist copyright, artist visibility before first delivery, client visibility before approval and identical agreed terms with final download.",
+    "Numeric image limits, note-length rules, watermark dimensions and exact error responses are unspecified. Reuse established limits without inventing thresholds.",
+    "Artist access to originals, direct replay response shape and licence transport are not fully specified; assert only the stated access and state invariants.",
+    "Failure-injection tests require a test-only persistence seam; reload verifies saved behavior but does not alone prove process-restart durability.",
+    "No linked files, other files, network, accounts, credentials, collaboration or resource tools were accessed. Actual Pix webhook verification, provider payouts, refunds, AI flags, scheduling, expiry and deployment remain outside this design."
+  ]
+}

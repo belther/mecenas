@@ -11,6 +11,8 @@ import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { formatBRL, parseBRL } from '../../lib/money';
 import { ApplyButton, ArtistApplications, ClientApplicationReview } from './applications';
+import { ReviewerQueue } from './reviewer';
+import { Reputation } from './reputation';
 import { Feedback, message } from './feedback';
 
 type Profile = NonNullable<FunctionReturnType<typeof api.profiles.me>>;
@@ -18,7 +20,7 @@ type RequestRow = FunctionReturnType<typeof api.requests.mine>[number];
 type Image = { id: Id<'uploads'>; url: string | null };
 export default function Panel() {
   const { isLoading, isAuthenticated } = useConvexAuth(); const connection = useConvexConnectionState();
-  return <><a className="skip-workspace" href="#workspace-main">Ir para o conteúdo</a><header><a className="wordmark" href="/">mecenas<span>✳</span></a><span className="pill">Ateliê de demonstração</span></header><main className="workspace" id="workspace-main" tabIndex={-1}><p className="demo-note">Use apenas dados fictícios. Esta etapa ainda não recebe pagamentos.</p>{!connection.isWebSocketConnected && (connection.hasEverConnected || connection.connectionRetries > 0) && <p className="feedback error" role="status">Conexão interrompida. Confira sua internet; o ateliê tenta reconectar automaticamente. Mantenha esta página aberta para preservar o formulário.</p>}{isLoading ? <p role="status">Abrindo o ateliê…</p> : isAuthenticated ? <Account /> : <Access />}</main></>;
+  return <><a className="skip-workspace" href="#workspace-main">Ir para o conteúdo</a><header><a className="wordmark" href="/">mecenas<span>✳</span></a><span className="pill">Ateliê de demonstração</span></header><main className="workspace" id="workspace-main" tabIndex={-1}><p className="demo-note">Use apenas dados fictícios. Os pagamentos deste ateliê são de teste.</p>{!connection.isWebSocketConnected && (connection.hasEverConnected || connection.connectionRetries > 0) && <p className="feedback error" role="status">Conexão interrompida. Confira sua internet; o ateliê tenta reconectar automaticamente. Mantenha esta página aberta para preservar o formulário.</p>}{isLoading ? <p role="status">Abrindo o ateliê…</p> : isAuthenticated ? <Account /> : <Access />}</main></>;
 }
 function Access() {
   const [create, setCreate] = useState(false); const [username, setUsername] = useState(''); const [password, setPassword] = useState(''); const [error, setError] = useState('');
@@ -36,7 +38,7 @@ function Account() {
   }
   async function leave() { if (!confirmReviewExit()) return; setPending(true); setError(''); try { await signOut(); } catch { setError('Não foi possível sair. Tente novamente.'); } finally { setPending(false); } }
   if (profile === undefined) return <p role="status">Carregando seu perfil…</p>;
-  return <><div className="workspace-heading"><div><p className="eyebrow">SEU ATELIÊ</p><h1>{profile ? `Olá, ${profile.displayName}.` : 'Como você chega por aqui?'}</h1>{profile && <p>{profile.role === 'artist' ? 'Seu portfólio, novas ideias e espaço para criar.' : 'Dê forma à sua próxima encomenda.'}</p>}</div><div className="actions">{profile && <button className="secondary" onClick={() => { if (editing || confirmReviewExit()) setEditing(!editing); }}>{editing ? 'Voltar às encomendas' : 'Editar perfil'}</button>}<button className="quiet" disabled={pending} onClick={leave}>{pending ? 'Saindo…' : 'Sair'}</button></div></div><Feedback error={error} />{!profile || editing ? <ProfileForm key={profile?._id || 'new'} profile={profile} onSaved={() => setEditing(false)} /> : profile.role === 'client' ? <Suspense fallback={<p role="status">Carregando encomendas…</p>}><ClientRequests reviewDirty={reviewDirty} /></Suspense> : <ArtistRequests />}</>;
+  return <><div className="workspace-heading"><div><p className="eyebrow">SEU ATELIÊ</p><h1>{profile ? `Olá, ${profile.displayName}.` : 'Como você chega por aqui?'}</h1>{profile && <p>{profile.role === 'artist' ? 'Seu portfólio, novas ideias e espaço para criar.' : 'Dê forma à sua próxima encomenda.'}</p>}</div><div className="actions">{profile && <button className="secondary" onClick={() => { if (editing || confirmReviewExit()) setEditing(!editing); }}>{editing ? 'Voltar às encomendas' : 'Editar perfil'}</button>}<button className="quiet" disabled={pending} onClick={leave}>{pending ? 'Saindo…' : 'Sair'}</button></div></div><Feedback error={error} /><ReviewerQueue />{profile && <Reputation profileId={profile._id} />}{!profile || editing ? <ProfileForm key={profile?._id || 'new'} profile={profile} onSaved={() => setEditing(false)} /> : profile.role === 'client' ? <Suspense fallback={<p role="status">Carregando encomendas…</p>}><ClientRequests reviewDirty={reviewDirty} /></Suspense> : <ArtistRequests />}</>;
 }
 function ProfileForm({ profile, onSaved }: { profile: Profile | null; onSaved: () => void }) {
   const [role, setRole] = useState<'artist' | 'client'>(profile?.role || 'artist'); const [name, setName] = useState(profile?.displayName || ''); const [bio, setBio] = useState(profile?.bio || ''); const [images, setImages] = useState<Image[]>(profile?.portfolioUploadIds.map((id, i) => ({ id, url: profile.images[i] })) || []);
@@ -97,6 +99,7 @@ function ArtistRequests() {
       {rows === undefined ? <p role="status">Carregando encomendas…</p> : rows.length === 0 ?
         <div className="empty"><h3>Ainda não há encomendas abertas.</h3><p>As encomendas publicadas para candidatura aparecem aqui.</p></div> :
         <div className="browse-grid">{rows.map(row => <RequestCard key={row._id} row={row}>
+          <Reputation requestId={row._id} />
           {applications !== undefined && <ApplyButton requestId={row._id} applied={applied.has(row._id)} />}
         </RequestCard>)}</div>}
     </section>

@@ -1,0 +1,41 @@
+{
+  "scenarios": [
+    {
+      "passed": true,
+      "browser": "158.0.8127.38",
+      "route": "Actual workspace delivery components with loopback transport shim and Convex test backend",
+      "viewports": [
+        1280,
+        390
+      ],
+      "browserTimeZone": "Asia/Tokyo",
+      "checkedOfferBrasiliaTime": true,
+      "expiredDespiteLateAccept": true,
+      "expiredOnBothReloads": true,
+      "reviewDeadlineBothRoles": true,
+      "approvalReasonOnBothReloads": "manual",
+      "approvedVersion": 3,
+      "downloadedOriginalMatches": true,
+      "licenceDownloaded": true
+    },
+    {
+      "passed": true,
+      "browser": "158.0.8127.38",
+      "route": "Actual workspace delivery components with loopback transport shim and Convex test backend",
+      "viewports": [
+        1280,
+        390
+      ],
+      "browserTimeZone": "Asia/Tokyo",
+      "checkedOfferBrasiliaTime": true,
+      "expiredDespiteLateAccept": true,
+      "expiredOnBothReloads": true,
+      "reviewDeadlineBothRoles": true,
+      "approvalReasonOnBothReloads": "deadline",
+      "approvedVersion": 3,
+      "downloadedOriginalMatches": true,
+      "licenceDownloaded": true
+    }
+  ],
+  "harness_sha256": "dfe2aec43dee1e88cee9357cb5a7d94b0d75ec201f3a1feaef5a22e74f362918"
+}

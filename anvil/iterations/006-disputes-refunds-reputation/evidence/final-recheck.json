@@ -1,0 +1,50 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "findings": [
+    {
+      "rank": 1,
+      "severity": "P2",
+      "type": "validation_gap",
+      "title": "Required sandbox refund remains unobserved",
+      "locations": [
+        "project-payment-readiness.md",
+        "browser-result.json",
+        "spec.md"
+      ],
+      "evidence": "Supplied records report missing development payment configuration and no dedicated provider refund attempt. Browser walkthroughs explicitly use synthetic provider responses.",
+      "impact": "The corrections support synthetic application safety, but do not establish complete provider acceptance.",
+      "recommendation": "Keep the actual sandbox acceptance check pending until the app-created, webhook-funded synthetic commission receives a matching confirmed full refund."
+    }
+  ],
+  "rationale": {
+    "conclusion": "The focused corrections resolve the previously identified application retry hazards. No remaining concrete synthetic application defect was established.",
+    "static_inspection": [
+      "The refund job ID and run number are saved transactionally. Retry rejects pending or in-progress jobs; claims and completion reject duplicate or stale runs.",
+      "A persistent reservation is committed before the refund POST. Timeout, unknown response, or lost confirmation preserves it, preventing subsequent POSTs even when canonical status remains PAID.",
+      "Only the specifically recognized insufficient-balance refusal clears the reservation. Unresolved outcomes remain pending for reconciliation.",
+      "The final tests explicitly cover both deadline orders, approval and revision preceding a flag, interrupted-run recovery, active-request overlap, and lost response followed by stale paid status.",
+      "The browser harness mounts the actual painel page tree through synthetic authentication, navigation, and transport adapters."
+    ],
+    "supplied_execution_evidence": {
+      "suite": "2 Node tests and 72 Vitest tests passed.",
+      "focused": "15 passed; 19 skipped.",
+      "browser": "Two walkthroughs passed, covering upheld and dismissed decisions, participant reloads, reputation, and authorized downloads.",
+      "checks": "Standalone typecheck and optimized build passed."
+    },
+    "reviewer_executed_checks": [
+      "All 19 final snapshot hashes match final-hashes.json.",
+      "Specification and plan hashes match approval.md.",
+      "Browser harness hash matches browser-result.json."
+    ],
+    "prior_review_resolution": "Local overlap and ambiguous-response replay concerns are corrected. Transition-order coverage and browser integration coverage are materially improved."
+  },
+  "limitations": [
+    "Only restricted read-only packet files were accessed. No network, account, collaboration, or external resource access occurred.",
+    "Application tests were not executed during this review; execution results are supplied evidence.",
+    "Interrupted-run coverage simulates termination through scheduler cancellation rather than an actual worker crash.",
+    "Browser evidence excludes browser sign-in, deployed routing, real Convex transport, and external refunds.",
+    "A reservation committed before an interrupted POST can remain pending indefinitely. This preserves safety but requires operator reconciliation if confirmation never arrives.",
+    "Provider refusal semantics were not independently verified; synthetic fixtures assume the recognized insufficient-balance response means no refund began.",
+    "Hashes establish artifact identity, not that supplied execution logs originated from those exact bytes."
+  ]
+}

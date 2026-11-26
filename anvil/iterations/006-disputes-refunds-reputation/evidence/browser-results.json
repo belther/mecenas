@@ -1,0 +1,51 @@
+{
+  "scenarios": [
+    {
+      "passed": true,
+      "browser": "158.0.8127.38",
+      "transport": "loopback fixture and Convex test backend",
+      "entry": "Actual /painel component tree, preauthenticated synthetic sessions, fixture transport and navigation adapter",
+      "roles": [
+        "client",
+        "artist",
+        "reviewer"
+      ],
+      "widths": [
+        1280,
+        390
+      ],
+      "heldAfterReload": true,
+      "reviewerSawProcess": true,
+      "decision": "uphold",
+      "outcomeAfterReload": true,
+      "correctReputation": true,
+      "originalBytesMatchForAuthorizedRole": true,
+      "refundConfirmedAfterRetry": true,
+      "sandboxProviderInvoked": false
+    },
+    {
+      "passed": true,
+      "browser": "158.0.8127.38",
+      "transport": "loopback fixture and Convex test backend",
+      "entry": "Actual /painel component tree, preauthenticated synthetic sessions, fixture transport and navigation adapter",
+      "roles": [
+        "client",
+        "artist",
+        "reviewer"
+      ],
+      "widths": [
+        1280,
+        390
+      ],
+      "heldAfterReload": true,
+      "reviewerSawProcess": true,
+      "decision": "dismiss",
+      "outcomeAfterReload": true,
+      "correctReputation": true,
+      "originalBytesMatchForAuthorizedRole": true,
+      "refundConfirmedAfterRetry": false,
+      "sandboxProviderInvoked": false
+    }
+  ],
+  "harness_sha256": "e47ed810da92b01ddd98f23010754c6e7dbe1d0acd6674b4e73947070966ecae"
+}

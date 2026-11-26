@@ -1,0 +1,44 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "findings": [
+    {
+      "rank": 1,
+      "severity": "P2",
+      "type": "validation_gap",
+      "title": "External refund guarantees remain unverified",
+      "locations": [
+        "final/lib/pix-provider.ts.snapshot:131",
+        "project-payment-readiness.md",
+        "browser-result.json"
+      ],
+      "evidence": "Retries reconcile the matching charge before posting, but a timed-out request could remain active externally after the scheduled action ends. The packet does not establish provider idempotency or immediate canonical visibility.",
+      "impact": "Local serialization fixes the reported active-worker overlap. Exactly one external financial effect still depends on provider behavior. No duplicate financial effect is demonstrated.",
+      "recommendation": "Keep external refund validation pending until the dedicated sandbox check and provider refund guarantees are established."
+    }
+  ],
+  "rationale": {
+    "static_inspection": [
+      "The scheduled job ID and run number are persisted transactionally. Retry rejects pending and in-progress jobs, independent of elapsed time.",
+      "Claim and completion guards reject duplicate claims and stale completion.",
+      "Added tests explicitly cover both deadline orders, approval and revision preceding a flag, interrupted-run recovery, and a paused provider POST with retry after two minutes.",
+      "The browser harness mounts the actual /painel component tree using synthetic authenticated identities and navigation/transport adapters.",
+      "No remaining concrete synthetic application defect was established in the focused corrections."
+    ],
+    "supplied_execution_evidence": {
+      "suite": "2 Node tests and 72 Vitest tests passed.",
+      "focused": "15 passed and 19 skipped.",
+      "browser": "Two walkthroughs passed with participant reloads, reviewer decisions, reputation checks and authorized downloads.",
+      "checks": "Standalone typecheck and optimized build succeeded."
+    },
+    "identity_checks": "All 19 final snapshot hashes match final-hashes.json. Specification and plan hashes match approval.md. Browser harness hash matches browser-result.json.",
+    "prior_review_resolution": "The reported local retry overlap is corrected. Transition-order and interruption coverage is materially improved. Browser coverage now includes the actual page tree, with integration boundaries explicitly disclosed. The payment-readiness extract documents the previously unverifiable blocker."
+  },
+  "limitations": [
+    "Only files in the restricted read-only packet were accessed.",
+    "Application tests were not executed during this recheck; test results are supplied evidence.",
+    "Interrupted-run coverage simulates termination by cancelling the scheduled job; it does not demonstrate an actual worker crash.",
+    "Browser evidence excludes browser sign-in, deployed routing, real Convex transport and external refunds.",
+    "Hashes establish artifact identity, not that supplied execution logs originated from those exact bytes.",
+    "The sandbox refund remains unobserved; this verdict does not establish full provider acceptance."
+  ]
+}

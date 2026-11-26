@@ -1,0 +1,1 @@
+export const DELIVERY_LICENCE = 'O cliente pode guardar a ilustração e exibi-la para uso pessoal, inclusive em perfis pessoais com crédito ao artista. A licença não inclui uso comercial, revenda ou transferência. O artista mantém os direitos autorais.';

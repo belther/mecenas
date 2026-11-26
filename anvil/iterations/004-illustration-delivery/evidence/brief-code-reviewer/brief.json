@@ -1,0 +1,62 @@
+{
+  "schema": "anvil-brief/1",
+  "role": "code-reviewer",
+  "project": "C:/Users/nabor/Documents/Workspace/Personal Projects/Mecenas",
+  "iteration": "004-illustration-delivery",
+  "release": {
+    "version": "0.6.0-briefs-dev",
+    "fingerprint": "5bd0f924098e04351e4b413e5e37d684e4545a7bf29341395edec8a13c25e20e"
+  },
+  "template": {
+    "file": "assets/briefs/code-reviewer.md",
+    "sha256": "766cba435ed8461937768b1fac98fae2dd4ea1e110b5fe4d8d5c4cd69c73826f"
+  },
+  "inputs": [
+    {
+      "name": "coder_report",
+      "path": "anvil/iterations/004-illustration-delivery/evidence/coder-report.md",
+      "sha256": "bc31c7b86257eede94d56655712751d004810e8777b3a70f1eeb8d83acbb280f"
+    },
+    {
+      "name": "decisions",
+      "path": "anvil/iterations/004-illustration-delivery/approval.md",
+      "sha256": "c7224a9f98c4f111d0e265ae61064b2b0dfe4e7fcb1f715002abf5518a645be1"
+    },
+    {
+      "name": "diff",
+      "path": "local-evidence/iteration-004-implementation.diff",
+      "sha256": "cce3ff17767aab1d3be380d283275b6d212b4938970674d3f57d686c9fe7c3c7"
+    },
+    {
+      "name": "plan",
+      "path": "anvil/iterations/004-illustration-delivery/plan.md",
+      "sha256": "97cca69da7f682d195ac6bf36ec557d2a4f5c361cc35b971326f255b3d341f1c"
+    },
+    {
+      "name": "spec",
+      "path": "anvil/iterations/004-illustration-delivery/spec.md",
+      "sha256": "d5108aef0c2aaa0fa904facdf24bf1c819a618bef0b2a80db451def95199d680"
+    },
+    {
+      "name": "test_baseline",
+      "path": "anvil/iterations/004-illustration-delivery/evidence/test-baseline.json",
+      "sha256": "9d48b800ecb858762963a10e3880616a684c99a553779daef79ac6b900a7d1ec"
+    }
+  ],
+  "implementation_roots": [
+    "app",
+    "convex",
+    "lib"
+  ],
+  "output_location": "anvil/iterations/004-illustration-delivery/evidence/code-review-brief",
+  "assignment": {
+    "slot": "primary",
+    "provider": "Codex CLI (ChatGPT subscription)",
+    "model": "gpt-6.1-sol"
+  },
+  "brief": {
+    "file": "brief.md",
+    "sha256": "390ea450200cd820b1eea818900b3c4a9da46bcf044597612e97475a4e06b364"
+  },
+  "boundary": "instruction-only"
+}

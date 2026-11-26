@@ -1,0 +1,118 @@
+{
+  "cases": [
+    {
+      "id": "C01",
+      "setup": "Synthetic owner, foreign client, recipient, unrelated artist and anonymous actor; accepted, pending and declined offers.",
+      "action": "Each actor calls payments.mine, payments.start and payments.refresh for each offer.",
+      "expected": "Only the owner can start or refresh accepted-offer payments. Only owner and recipient can read their permitted projections. Pending and declined offers cannot be charged. Denials disclose no Pix instructions."
+    },
+    {
+      "id": "C02",
+      "setup": "Accepted offer on a closed request and an iteration-002 accepted offer.",
+      "action": "Read payment state and start payment as owner.",
+      "expected": "Both begin awaiting payment and remain eligible. Request closure does not prevent payment; acceptance and reserved slots remain intact."
+    },
+    {
+      "id": "C03",
+      "setup": "Approved format-valid synthetic CPF fixture, invalid and unapproved inputs, two clients and multiple accepted offers.",
+      "action": "Submit invalid inputs; race two clients claiming the fixture; reuse it for the winning client's other offer.",
+      "expected": "Server normalizes and validates input. Invalid or unapproved input fails before provider creation. Exactly one account claims the fixture atomically; the same account can reuse it. Storage contains only a keyed hash; plaintext is absent from logs and is not sent to a provider API that does not require it."
+    },
+    {
+      "id": "C04",
+      "setup": "5000-cent accepted offer on a three-slot request; mock provider captures requests.",
+      "action": "Start payment while attempting to alter price or mode through browser input; return wrong-amount or production-mode provider responses.",
+      "expected": "Server uses the saved 5000-cent per-artist amount in BRL and sandbox mode, without slot multiplication, split or added buyer fees. Invalid provider responses never become usable Pix instructions or funded state."
+    },
+    {
+      "id": "C05",
+      "setup": "One unpaid accepted offer; simultaneous owner sessions.",
+      "action": "Race starts, repeat submissions, then reload and reopen.",
+      "expected": "One attempt is reserved atomically with one stable reference; exactly one caller submits provider creation. All successful reads converge on the same open charge, code and expiry."
+    },
+    {
+      "id": "C06",
+      "setup": "Provider creates a charge but creation times out or returns an uncertain result.",
+      "action": "Repeat start, refresh and request retry; make reference lookup return missing or ambiguous results.",
+      "expected": "State shows pending verification and artist remains waiting. Reconciliation uses the original reference. Missing search results alone never permit a second creation."
+    },
+    {
+      "id": "C07",
+      "setup": "Provider creation succeeds; saving its returned identity and instructions fails locally.",
+      "action": "Reload, start again and reconcile by stable reference.",
+      "expected": "No duplicate provider creation occurs. Until recovered, the outcome remains uncertain and work stays locked. Successful recovery persists and exposes the original charge."
+    },
+    {
+      "id": "C08",
+      "setup": "Attempts with definitive failed creation, ambiguous creation, local-clock expiry and provider-confirmed unpayable unpaid charge.",
+      "action": "Request manual replacement, including concurrent retry clicks.",
+      "expected": "Replacement is allowed only after definitive failure or provider-confirmed unpayable unpaid status. It uses a fresh reference and a single reserved creation. Ambiguity or local-clock expiry alone cannot authorize replacement. Acceptance, slot and waiting artist remain unchanged."
+    },
+    {
+      "id": "C09",
+      "setup": "Stored sandbox charge and mock HTTPS notification receiver.",
+      "action": "Deliver invalid secret/signature, malformed payload, production event, unknown charge, wrong association/reference or mismatched amount.",
+      "expected": "Every invalid delivery leaves funding and entitlement unchanged. No event or browser payload can substitute for verified canonical charge identity, association, reference, amount and paid sandbox state."
+    },
+    {
+      "id": "C10",
+      "setup": "Authentic sandbox completion notification; canonical provider lookup returns pending, fails, then returns exact paid charge.",
+      "action": "Process each lookup outcome; attempt browser-side funded signals.",
+      "expected": "Pending or failed lookup keeps artist waiting. Browser signals cannot fund. Only exact canonical paid verification funds the associated offer and records its 5000-cent entitlement."
+    },
+    {
+      "id": "C11",
+      "setup": "Exact paid sandbox charge; injectable failure during funding/event persistence.",
+      "action": "Race duplicate event ID, different event IDs for the same payment and owner refresh; interrupt persistence, then redeliver.",
+      "expected": "Funding and event recording commit atomically. Failure leaves no partial entitlement or dedupe record that prevents recovery. Redelivery recovers; every race produces exactly one funded record and entitlement."
+    },
+    {
+      "id": "C12",
+      "setup": "Missed notification for an existing charge.",
+      "action": "Owner refreshes while provider reports pending, then paid; foreign client and recipient attempt refresh.",
+      "expected": "Authorized refresh runs the same canonical verification and can recover funding without a notification. Pending stays waiting; unauthorized refresh cannot reconcile or disclose instructions."
+    },
+    {
+      "id": "C13",
+      "setup": "Funded offer and a second distinct paid charge associated with it.",
+      "action": "Deliver stale unpaid/expiry events and the second paid-charge event.",
+      "expected": "Original funding cannot regress. Original entitlement and offer assignment remain unchanged. Second payment creates sanitized conflict evidence, no second entitlement and no automatic refund."
+    },
+    {
+      "id": "C14",
+      "setup": "Owner and recipient sessions before creation, during uncertainty, awaiting Pix and after funding.",
+      "action": "Read projections and reload both roles at each state.",
+      "expected": "Owner receives safe instructions/status; recipient receives only their own payment status. Neither receives secrets, CPF hashes, raw events or internal reconciliation details. Recipient remains 'Aguardando pagamento' until verified, then sees 'Pagamento de teste confirmado. Você pode começar nesta simulação.' Both roles converge after reload."
+    },
+    {
+      "id": "C15",
+      "setup": "Synthetic browser walkthrough at desktop and narrow widths using keyboard navigation.",
+      "action": "Generate Pix beside accepted offer and price; copy text code; inspect QR, expiry, pending and retry feedback; reload both roles.",
+      "expected": "Cream/green workspace and offer wording remain. Pix and funded screens clearly identify the demo. QR and usable text code coexist; copy feedback is clear, expiry is in Brazilian Portuguese, controls work by keyboard and content wraps without losing access."
+    },
+    {
+      "id": "C16",
+      "setup": "Handoff to an authorized conductor with synthetic accounts and configured sandbox HTTPS notifications.",
+      "action": "Conductor creates and simulates one sandbox Pix and observes actual webhook delivery and both role views.",
+      "expected": "Evidence connects actual delivery, canonical verification and matching persisted funded states. Failed sandbox delivery is reported explicitly; mocked success does not satisfy this walkthrough."
+    }
+  ],
+  "redStrategy": {
+    "approach": "Use synthetic fixtures, a controllable mock provider, concurrency barriers and persistence fault injection. Assert provider-call counts, persisted invariants and role-visible behavior.",
+    "meaningfulReds": [
+      "Duplicate creation causes C05–C08 to fail.",
+      "Funding directly from browser or notification payload causes C09–C10 to fail.",
+      "Nonatomic CPF claims or funding commits cause C03 or C11 to fail.",
+      "Expiry releasing a slot, stale events undoing funding or duplicate entitlement causes C08 or C13 to fail.",
+      "Recipient Pix leakage or secret-bearing projections cause C01 or C14 to fail."
+    ],
+    "completion": "Design only. No tests, application code, browser actions or provider operations were executed."
+  },
+  "limitations": [
+    "Read only spec.md and interfaces.txt in one batched read; linked specifications and other files were not inspected.",
+    "Specification revision 0.1 is draft. Exact payload schemas, signature protocol, error codes, fixture approval mechanism and definitive provider failure signals are unspecified.",
+    "The supplied fixture describes two artists; the three-slot amount check requires an additional synthetic fixture.",
+    "Actual sandbox delivery, browser behavior, tests, typecheck and optimized build remain execution-stage checks.",
+    "No network, accounts, credentials, real client data, collaboration or resource tools were accessed."
+  ]
+}

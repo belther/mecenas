@@ -5,7 +5,7 @@ import { registerPassword } from '@convex-dev/auth/components/password/test';
 import { registerUsername } from '@convex-dev/auth/components/username/test';
 import type { DefaultFunctionArgs, RegisteredMutation } from 'convex/server';
 import schema from '../convex/schema';
-import { api } from '../convex/_generated/api';
+import { api, internal } from '../convex/_generated/api';
 import type { Id } from '../convex/_generated/dataModel';
 import type { MutationCtx } from '../convex/_generated/server';
 import { respond as respondMutation, select as selectMutation } from '../convex/applications';
@@ -334,3 +334,122 @@ describe('iteration 002 application and offer contract', () => {
     expect(await f.review()).toMatchObject({ revision: 1, queue: [c], reserved: 2 });
   });
 });
+
+test.each(['accept', 'decline'] as const)('005 late %s expires and promotes exactly once', async response => {
+  const f = await fixture(1);
+  const a = await f.apply(f.artistA);
+  const b = await f.apply(f.artistB);
+  vi.useFakeTimers({ now: Date.now() + 60000 });
+  try {
+    const start = Date.now();
+    await f.select([a], [b]);
+    const first = await f.offer(f.artistA);
+    const day = 24 * 60 * 60 * 1000;
+    expect(first).toMatchObject({ respondBy: start + day });
+    vi.setSystemTime(start + day);
+    expect(await f.respond(f.artistA, first.id, response)).toEqual({ status: 'expired' });
+    expect(await f.offer(f.artistB)).toMatchObject({
+      status: 'pending', slot: first.slot, pricePerArtistCents: first.pricePerArtistCents, respondBy: start + 2 * day,
+    });
+    expect(await f.respond(f.artistA, first.id, response)).toEqual({ status: 'expired' });
+    expect(await f.review()).toMatchObject({ reserved: 1, revision: 2, queue: [] });
+  } finally { vi.useRealTimers(); }
+});
+
+test('005 two scheduled expiries promote distinct backups and then free both slots', async () => {
+  const f = await fixture(2);
+  const ids = await Promise.all([f.artistA, f.artistB, f.artistC, f.artistD].map(actor => f.apply(actor)));
+  vi.useFakeTimers({ now: Date.now() + 60000 });
+  try {
+    await f.select(ids.slice(0, 2), ids.slice(2));
+    const day = 86400000;
+    await vi.advanceTimersByTimeAsync(day - 1);
+    expect((await f.review()).reserved).toBe(2);
+    expect((await f.offer(f.artistA)).status).toBe('pending');
+    await vi.advanceTimersByTimeAsync(1);
+    await f.db.finishInProgressScheduledFunctions();
+    expect(await f.review()).toMatchObject({ revision: 3, queue: [], reserved: 2 });
+    const promoted = await Promise.all([f.artistC, f.artistD].map(actor => f.offer(actor)));
+    expect(promoted.map(o => o.slot).sort()).toEqual([1, 2]);
+    expect(promoted.every(o => o.status === 'pending')).toBe(true);
+    await f.db.finishAllScheduledFunctions(() => vi.runAllTimers());
+    expect(await f.review()).toMatchObject({ revision: 5, reserved: 0 });
+  } finally { vi.useRealTimers(); }
+});
+
+test.each(['accept', 'decline'] as const)('005 legacy offer receives a full window and accepts a timely %s', async answer => {
+  const f = await fixture(1);
+  const a = await f.apply(f.artistA);
+  await f.select([a]);
+  const offer = await f.offer(f.artistA);
+  await f.db.run(ctx => ctx.db.patch(offer.id, { respondBy: undefined }));
+  vi.useFakeTimers({ now: Date.now() + 10 * 86400000 });
+  try {
+    const due = Date.now() + 86400000;
+    await f.db.mutation(internal.deadlines.initializeOffers, {});
+    vi.setSystemTime(due - 100);
+    await f.db.mutation(internal.deadlines.initializeOffers, {});
+    expect(await f.offer(f.artistA)).toMatchObject({ respondBy: due });
+    vi.setSystemTime(due - 1);
+    const expected = answer === 'accept' ? 'accepted' : 'declined';
+    expect(await f.respond(f.artistA, offer.id, answer)).toEqual({ status: expected });
+    vi.setSystemTime(due + 1);
+    await f.db.mutation(internal.applications.expire, { offerId: offer.id, respondBy: due });
+    expect((await f.offer(f.artistA)).status).toBe(expected);
+  } finally { vi.useRealTimers(); }
+});
+
+test('005 expiry racing an answer consumes only one reservation', async () => {
+  const f = await fixture(1);
+  await f.select([await f.apply(f.artistA)]);
+  const offer = await f.offer(f.artistA);
+  const respondBy = offer.respondBy!;
+  vi.useFakeTimers({ now: respondBy + 1 });
+  try {
+    const [, answer] = await Promise.all([
+      f.db.mutation(internal.applications.expire, { offerId: offer.id, respondBy }),
+      f.respond(f.artistA, offer.id, 'accept'),
+    ]);
+    expect(answer).toEqual({ status: 'expired' });
+    expect(await f.review()).toMatchObject({ reserved: 0, revision: 2 });
+  } finally { vi.useRealTimers(); }
+});
+
+test('005 legacy offer migration restarts after a lost continuation while an artist responds', async () => {
+  const f = await fixture(1);
+  const ids: Id<'offers'>[] = [];
+  for (let i = 0; i < 35; i++) {
+    const requestId = await f.owner.mutation(api.requests.saveDraft, f.request);
+    await f.owner.mutation(api.requests.publish, { id: requestId });
+    const id = await f.apply(f.artistA, requestId);
+    await f.owner.mutation(applications.select, {
+      requestId, selectedApplicationIds: [id], backupApplicationIds: [], expectedRevision: 0,
+    });
+    const offer = await f.db.run(ctx => ctx.db.query('offers').withIndex('by_application', q => q.eq('applicationId', id)).unique());
+    ids.push(offer!._id);
+    await f.db.run(ctx => ctx.db.patch(offer!._id, { respondBy: undefined }));
+  }
+  vi.useFakeTimers({ now: Date.now() + 60000 });
+  try {
+    const firstDue = Date.now() + 86400000;
+    await f.db.mutation(internal.deadlines.initializeOffers, {});
+    const pending = () => f.db.run(ctx => ctx.db.query('offers').collect());
+    expect((await pending()).filter(o => o.respondBy === firstDue)).toHaveLength(32);
+    await f.db.run(async ctx => {
+      const jobs = await ctx.db.system.query('_scheduled_functions').collect();
+      const continuation = jobs.find(job => job.name.includes('initializeOffers') && job.state.kind === 'pending');
+      if (!continuation) throw Error('Missing continuation');
+      await ctx.scheduler.cancel(continuation._id);
+    });
+    vi.setSystemTime(Date.now() + 1000);
+    await Promise.all([
+      f.respond(f.artistA, ids[34], 'accept'),
+      f.db.mutation(internal.deadlines.initializeOffers, {}),
+    ]);
+    await f.db.mutation(internal.deadlines.initializeOffers, {});
+    const rows = await pending();
+    expect(rows.filter(o => o.respondBy === firstDue)).toHaveLength(32);
+    expect(rows.filter(o => o.status === 'pending' && o.respondBy !== undefined)).toHaveLength(34);
+    expect(rows.find(o => o._id === ids[34])?.status).toBe('accepted');
+  } finally { vi.useRealTimers(); }
+}, 90000);

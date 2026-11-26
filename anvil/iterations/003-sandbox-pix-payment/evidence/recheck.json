@@ -1,0 +1,47 @@
+{
+  "result": {
+    "findings": [],
+    "checks": [
+      {
+        "area": "Reservation",
+        "result": "The mutation reuses an existing active or funded attempt, copies the saved per-artist price, and grants creation to only the caller that inserts a new attempt."
+      },
+      {
+        "area": "Funding idempotency",
+        "result": "Funding and event recording occur in one mutation. Repeated event IDs and distinct events for the same attempt preserve one funded record. A second paid attempt records a conflict and preserves the original funding."
+      },
+      {
+        "area": "Event verification",
+        "result": "The supplied code checks delivery authentication, v2 completion shape, sandbox flags, event and charge IDs, and amount. It performs a provider lookup before funding. Canonical charge validation remains unverified because readCharge is omitted."
+      },
+      {
+        "area": "Role projections",
+        "result": "Access requires the owning client or recipient artist. Artists receive only payment phase. Client projections omit identity hashes, raw events and reconciliation records. Eligibility does not depend on the request remaining open."
+      },
+      {
+        "area": "Repairs",
+        "result": "The added test covers a 5000-cent offer on a three-slot request and recovery after a failed local write, asserting one creation request. Unclassified creation responses retain the reservation. The supplied Node action imports the relocated adapter."
+      },
+      {
+        "area": "Integration lines",
+        "result": "The supplied lines place payment components on accepted offers for both roles. Full rendering and component behavior cannot be established from these fragments."
+      }
+    ],
+    "limitations": [
+      "Static review only. No development tools, tests, typecheck, build or provider calls were executed.",
+      "Only spec.md, source.txt and review-changes.md were read in one batch. No parent source, Git, secrets, network, collaboration or generic resource tools were accessed.",
+      "The packet contains selected source. Adapter helpers including readCharge, request, testKey and cpfHash, schema definitions, payment components and complete integration files are absent.",
+      "CPF validation, canonical charge association, provider API compatibility, complete UI behavior and actual webhook delivery therefore remain unverified.",
+      "No findings means no confirmed defect in the supplied excerpts; it does not establish complete acceptance-check coverage."
+    ]
+  },
+  "packetSha256": "6742277f99acc0d707f7e83a829e60b780925400c28b336f3d4834e76461560a",
+  "eventsSha256": "e1eb20615f45d0e7abc119fd8fbe591e606f6fde92a1141fddb48664a2f2d899",
+  "usage": {
+    "input_tokens": 40097,
+    "cached_input_tokens": 25472,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 725,
+    "reasoning_output_tokens": 109
+  }
+}

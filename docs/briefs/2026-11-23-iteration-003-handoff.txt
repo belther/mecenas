@@ -1,0 +1,82 @@
+Continue Mecenas iteration 003 — finish the real sandbox payment test
+
+Project: C:/Users/nabor/Documents/Workspace/Personal Projects/Mecenas
+Destination: a fresh Codex chat in this workspace. The specification and
+evidence carry the needed context. No earlier chat history is required.
+
+Read SPEC.md, AGENTS.md, anvil.yaml, and the iteration 003 evidence index at
+anvil/iterations/003-sandbox-pix-payment/evidence/index.md. Check git status.
+Main is at eba2b02 (iteration 002), one commit ahead of origin/main when this
+handoff was prepared. Iteration 003 source and records are uncommitted.
+The original iteration 002 brief is also uncommitted. Keep it out of any
+iteration 003 commit. Production remains on iteration 001.
+
+Nabo approved iteration 003 revision 0.1 and its bounded execution exception.
+The shell and standalone patch check passed under the existing 0.5.0-hub-dev
+pin. Full isolation remains unverified. No approval applies to a new
+iteration or to production. The sanitized independent design and reviews
+are in the iteration 003 evidence. No review jobs are needed to repeat the
+already completed work.
+
+Implemented and checked:
+- Owner-only sandbox Pix for the saved amount on an accepted offer.
+- Synthetic CPF claim stored only as a keyed hash, with duplicate claims blocked.
+- One current attempt, recovery after uncertain creation, replacement only
+  after a definitive rejection or provider-confirmed unpaid expiry.
+- Private secret and raw-body signature checks, independent provider lookup,
+  and one funded record after duplicate or concurrent confirmations.
+- 41 tests, typecheck and optimized build passed.
+- An actual no-split 5000-cent sandbox charge was simulated and read back
+  as PAID in a conductor probe. No live payment or payout took place.
+- The existing Convex development backend received the functions. Its HTTPS
+  route returned 503 without configuration. A local signed HTTP fixture
+  exercised the application's verification flow with a mocked provider.
+- Desktop and mobile synthetic sessions reached the accepted offer. Without
+  payment configuration the client got no QR, and the artist stayed waiting
+  after reload. The temporary development signup allowlist was restored.
+
+Remaining acceptance check:
+Observe a payment initiated from the client UI, the actual provider webhook,
+and the same funded state after reload in both client and artist views.
+Until this passes, iteration 003 is implemented but its provider-to-app
+end-to-end test is incomplete.
+
+Nabo configures only the existing Convex DEVELOPMENT deployment
+successful-fennec-849, under Settings → Environment Variables:
+- ABACATEPAY_API_KEY — existing abc_dev_ key from ignored .env.local.
+- ABACATEPAY_TEST_MODE — true.
+- ABACATEPAY_WEBHOOK_SECRET — fresh random value with at least 32 characters.
+- MECENAS_CPF_HASH_SECRET — a different random value with at least 32 characters.
+- MECENAS_SYNTHETIC_CPF_HASHES — comma-separated HMAC-SHA256 hex digests of
+  approved synthetic CPF digits using MECENAS_CPF_HASH_SECRET. The documented
+  provider example 111.444.777-35 was used in tests. Never use a real CPF.
+
+If Nabo puts the same CPF hash secret in his ignored .env.local, this
+PowerShell command prints only the allowlist digest for the example fixture:
+
+node --env-file="C:/Users/nabor/Documents/Workspace/Personal Projects/Mecenas/.env.local" -e "const crypto = require('node:crypto'); const key = process.env.MECENAS_CPF_HASH_SECRET; if (!key || key.length < 32) throw Error('Set the local CPF hash secret first'); console.log(crypto.createHmac('sha256', key).update('11144477735').digest('hex'));"
+
+In the AbacatePay dashboard, turn on Modo Teste, then open Integração →
+Webhooks → Criar webhook. Select Webhook v2 and transparent.completed.
+Use this endpoint and the same ABACATEPAY_WEBHOOK_SECRET as Convex:
+https://successful-fennec-849.convex.site/webhooks/abacatepay
+Never paste a key, secret or provider payload into chat or Git.
+
+Next authorized actions after Nabo confirms setup:
+1. Confirm the endpoint rejects an invalid secret without exposing values.
+2. Use fresh synthetic accounts or an existing authorized synthetic fixture.
+   In local Next.js, create/publish a request, apply, select and accept.
+   Confirm the artist waits. Use the owner's generate Pix action.
+3. Simulate that app-created charge with the existing AbacatePay sandbox key.
+   Observe its actual webhook delivery, the confirmed client/artist views and
+   persistence after reload. Resend the sandbox event once and confirm the
+   exact cents and one funded record. Do not use checkout, refund or payout
+   endpoints outside the approved test scope.
+4. Record dated sanitized evidence in the iteration evidence and SPEC §6.
+   Check tests, typecheck and build if code changes. Check the Brasília freeze
+   before committing. Release to production only with separate approval.
+
+Limits: synthetic data only, no real funds, production account edits,
+production deploy, fees, provider transfers, Anvil upgrade or new spending.
+Scheduled unanswered-offer expiry belongs to iteration 005. Delivery and
+simulated payout are planned later. No background work remains.

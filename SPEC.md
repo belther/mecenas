@@ -22,12 +22,12 @@ automatically when the client does not answer in time.
 |---|------|
 | R1 | **One price rule:** the client sets a price per artist. "Split R$50 among 3" is R$16.67 each; "R$50 each" is R$50 each. |
 | R2 | Artists only *apply* to a request ("I will do it"). Nobody draws before an accepted offer. |
-| R3 | The client selects artists and keeps a ranked **backup queue**. A decline or a missed deadline sends the offer to the next artist. |
+| R3 | The client selects artists and keeps a ranked **backup queue**. Each offered artist has 24 elapsed hours to reply. A decline or expiry sends the offer to the next eligible artist with a fresh 24 hours. |
 | R4 | An offer is accept / decline. No chat. |
 | R5 | Money is paid and locked when the artist accepts. |
 | R6 | Every delivery includes a **watermarked preview** and **2–3 process images** (sketch, steps). |
 | R7 | The offer includes **2 revisions**. After delivery, the client approves, asks for a revision, or flags AI. |
-| R8 | **No answer by the deadline → money is released to the artist automatically.** |
+| R8 | The client has 72 elapsed hours to review each published delivery version. A timely revision stops that clock. Silence at the deadline automatically approves the current eligible version and releases the funded amount to the artist (simulated under §6). |
 | R9 | **AI flag:** goes to platform review, not to the client. The full file stays hidden during review. Upheld → client refunded, keeps nothing. Rejected → artist paid. No automatic AI detectors. |
 | R10 | On approval: money released, client downloads the full-quality file with a written **licence** (what the client may do with it). |
 | R11 | Platform fee to artists: **zero**. |
@@ -36,6 +36,8 @@ automatically when the client does not answer in time.
 
 - **Artist:** commissions completed, on-time rate, AI flags upheld against them.
 - **Client:** commissions paid, revision/rejection rate, AI flags they raised that were upheld vs rejected.
+For the demo, each funded artist offer counts as one paid commission, including later refunds. The client’s revision and rejection rates use distinct paid commissions that reached first delivery. A revision counts once per commission. Rejection means the platform upheld the flag. Show the numerator and denominator, or “Sem histórico” when the denominator is zero. An artist completes a commission when its delivery is approved. Agreed artist delivery dates are not recorded, so the profile shows “Sem prazo de entrega registrado”.
+
 - **Stars (optional):** blind — neither side sees the other's rating until both rated or 7 days pass.
 
 ## 5. Identity
@@ -129,6 +131,29 @@ Reviewed local evidence: `local-evidence/abacatepay-1795223846926.json`,
 `local-evidence/refund-completed.json`. These are ignored account/test records;
 do not publish raw IDs or keys. The split payment is refunded; the separate
 synthetic funding payment remains as test balance. Keep the §6 fallback.
+
+### Iteration 003 sandbox contract — 2026-11-23 (America/Sao_Paulo)
+
+One synthetic, no-split Pix charge for 5000 cents was created in test mode.
+The create, lookup by external reference, simulate-payment, and lookup by
+provider ID calls all returned HTTP 200. The canonical charge showed
+`devMode=true` and transitioned from `PENDING` to `PAID` at 5000 cents.
+The lookup returned the app reference in metadata, with no separate
+external-reference field and no paid-amount value. The adapter matches the
+canonical amount, metadata, sandbox mode and charge ID. This checks the
+provider API contract. It does not establish delivery to Mecenas's webhook.
+
+The end-to-end check is pending owner confirmation that the five payment
+environment variables are set on Convex development and the AbacatePay v2
+`transparent.completed` webhook is registered in test mode. The check must
+observe an app-created charge, provider delivery, funded state after reload
+for the client and artist, and one funded record after event replay.
+
+Sanitized results are recorded with the [iteration 003 verification](anvil/iterations/003-sandbox-pix-payment/evidence/verification.md).
+
+### Iteration 006 sandbox refund readiness — 2026-11-24 (Brasília)
+
+The conductor checked configuration names on Convex development. Only `MECENAS_DEMO_USERNAMES` was present. The five sandbox payment variables were absent. Delivery of a real provider notification to the app has not been demonstrated. No dedicated iteration 006 charge or provider refund was attempted. The local refund path was tested with synthetic provider responses. The outstanding check requires an app-created, webhook-funded test commission, an independent reviewer's upheld decision and a matching full refund confirmed by AbacatePay. [Development payment setup](docs/briefs/2026-11-23-iteration-003-handoff.txt).
 
 ## 7. Out of scope (hackathon)
 

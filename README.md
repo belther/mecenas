@@ -14,10 +14,11 @@ artist/client profiles, validated portfolio/reference images, private request
 drafts, publication and artist browsing. It was verified locally against the
 **development** Convex deployment, then published with Nabo's approval on
 2026-11-21: https://mecenas-azure.vercel.app/painel . Production health, public
-page access and anonymous-denial checks pass. Registration is closed; production
-test accounts have not been provisioned. Authenticated end-to-end flows were
-verified in development, not in production. See [release evidence](docs/deployment-001.md).
-Applications, offers and payments are not implemented yet.
+page access and anonymous-denial checks pass. Registration is closed. One private
+synthetic production login was verified on 2026-11-24. See the original
+[release evidence](docs/deployment-001.md). The working tree also contains offers,
+test payments, versioned deliveries, deadlines, human dispute review and reputation.
+The public site still serves iteration 001.
 Without a Convex URL the page explicitly shows local demo mode.
 First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
 Convex dev and production health queries are connected. The sandbox probe
@@ -89,6 +90,26 @@ npm test
 npm run typecheck
 npm run build
 ```
+
+### Human dispute review in development
+
+Designate a separate synthetic account. In the Convex development dashboard, copy
+that account's immutable `users` row ID into Settings → Environment Variables →
+`MECENAS_REVIEWER_USER_ID`. Sign in as that account at `/painel` to see
+**Revisão da plataforma**. Accounts involved in a commission cannot decide it.
+
+The client can choose **Contestar uso de IA** before a funded version's review
+deadline. The platform reviewer examines its preview and process images and records
+a decision. An upheld case stays pending until the original sandbox Pix charge is
+confirmed refunded. **Verificar reembolso** checks that charge again. If the
+provider explicitly refuses for insufficient sandbox balance, a reviewer can
+retry after the balance is available. After an uncertain submission, the app
+only checks for confirmation. If the charge stays paid, the operator must
+reconcile the request with AbacatePay before any further provider-side action. A dismissed
+case unlocks the approved original and licence and records a simulated release.
+For provider verification, use the [development payment setup](docs/briefs/2026-11-23-iteration-003-handoff.txt)
+and a sandbox key with refund permission. The app also accepts the signed
+`transparent.refunded` event on its existing development webhook.
 
 ## Vercel + Convex production
 

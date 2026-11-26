@@ -1,0 +1,26 @@
+{
+  "result": {
+    "findings": [],
+    "checks": [
+      "Read spec.md and source.txt together in one batch.",
+      "Visible access checks restrict charge creation and retrieval to the owning client and payment status to the recipient.",
+      "Visible provider validation checks sandbox mode, exact amount, charge identity and stable reference.",
+      "No concrete invariant violation established from the visible source."
+    ],
+    "limitations": [
+      "The read output was truncated across payment mutations and actions. Owner authority, ambiguous retries and late/concurrent notification handling could not be fully traced. Empty findings do not establish that these invariants hold.",
+      "Did not repeat the read, preserving the requested single-batch limit.",
+      "Static review only; no development tools or tests executed.",
+      "Used only the read-only packet; no parent source, Git, provider calls, secrets, network, collaboration or generic resource tools accessed."
+    ]
+  },
+  "packetSha256": "761934cb54f15b4df536f9a4b70f3271e9f1ec3a91b10576f3bb86e20288ae6f",
+  "eventsSha256": "8fe038c143952f2c6572132da1713fdd004ae23d16527a958124049f90193820",
+  "usage": {
+    "input_tokens": 44850,
+    "cached_input_tokens": 16768,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 412,
+    "reasoning_output_tokens": 131
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "boundary": {
+    "events_sha256": "7eab3293431a4a4390490dd5fc8f10a97757e75da26a55bc1d4f57683dbde70a",
+    "usage": {
+      "input_tokens": 71682,
+      "cached_input_tokens": 53248,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1054,
+      "reasoning_output_tokens": 0
+    }
+  },
+  "initial-design": {
+    "events_sha256": "7b371d6a096b02a7936e4efd0714b6d11275e23690b63118710d015f32e04174",
+    "usage": {
+      "input_tokens": 62455,
+      "cached_input_tokens": 40832,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1836,
+      "reasoning_output_tokens": 35
+    }
+  },
+  "adversarial": {
+    "events_sha256": "098de3089114d707bf3f060141f30f0797ccf79126b75690c465d1a5417cf5b5",
+    "usage": {
+      "input_tokens": 217199,
+      "cached_input_tokens": 160512,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1190,
+      "reasoning_output_tokens": 151
+    }
+  },
+  "reviewer": {
+    "events_sha256": "18648985edd883a61e14aa226bc4834ef11e7fe45f016e55965f1a9693b44fad",
+    "usage": {
+      "input_tokens": 228598,
+      "cached_input_tokens": 173696,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1916,
+      "reasoning_output_tokens": 97
+    }
+  },
+  "recheck": {
+    "events_sha256": "1be678bbfbae762b4961e5c3fdfce59b22f9b6a651714f6a21837bb0055b2609",
+    "usage": {
+      "input_tokens": 176382,
+      "cached_input_tokens": 133760,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1020,
+      "reasoning_output_tokens": 15
+    }
+  }
+}

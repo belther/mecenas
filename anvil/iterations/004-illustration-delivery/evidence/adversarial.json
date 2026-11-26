@@ -1,0 +1,42 @@
+{
+  "findings": [],
+  "cleanControls": [
+    {
+      "control": "Authorization and private files",
+      "staticTrace": "Participant ownership and accepted-offer checks precede delivery access. File reads require funding. Original reads additionally require the owning client and the released version/payment. Public responses contain bytes or filtered metadata, without storage IDs or URLs.",
+      "syntheticCheck": "Anonymous callers and unrelated client/artist identities are rejected; preapproval originals and originals from unapproved versions are rejected."
+    },
+    {
+      "control": "Offer and version binding",
+      "staticTrace": "Submission validates each unused upload against offer, artist, expected version and file kind. Duplicate process IDs and counts outside two or three are rejected.",
+      "syntheticCheck": "Swap files between synthetic offers, reuse consumed uploads, substitute process/original kinds, and submit stale versions: each fails before publication."
+    },
+    {
+      "control": "Retry and compound mutation failure",
+      "staticTrace": "Uploading does not advance delivery state. Registration rechecks draft eligibility and attempts storage cleanup on failure. Submission groups version creation, upload consumption and state advancement in one mutation.",
+      "syntheticCheck": "Fail the second process upload, then retry: previous state remains available. Inject a failure after version insertion: transaction rollback must preserve upload eligibility and the prior state."
+    },
+    {
+      "control": "Revision and approval competition",
+      "staticTrace": "Both transitions check current version and phase. Revision changes phase immediately and caps requests at two. Approval records the release and approved phase together; same-version approval replay returns without another release.",
+      "syntheticCheck": "Race submissions, duplicate revisions, approvals, and approval versus revision. Under transactional conflict handling, only one competing transition commits; a 5000-cent release remains fixed to the approved version."
+    },
+    {
+      "control": "Image validation",
+      "staticTrace": "Validation checks nonempty input, 5 MB limit, supported MIME ownership, decoded format, dimensions, 20-megapixel limit and multiple pages. Preview generation decodes and watermarks the final image; original bytes are preserved.",
+      "syntheticCheck": "Reject empty, oversized, corrupt, MIME-mismatched and multipage fixtures. Trace a 1300×900 PNG to a reduced WebP preview and unchanged approved original."
+    },
+    {
+      "control": "Responsive role controls",
+      "staticTrace": "Artist upload controls appear only in ready/revision phases; client review controls appear only during review; download controls appear for the approved client view. CSS provides flexible image grids, wrapping and minimum button height.",
+      "syntheticCheck": "Trace both roles through unpaid, ready, review, revision and approved states. Narrow-width rendering still requires visual verification."
+    }
+  ],
+  "limitations": [
+    "Static analysis only; no tests, fault injection, concurrency runs, typecheck, build or browser checks were executed.",
+    "Inspected only spec.md and all 884 lines of implementation.diff, in untruncated ranges.",
+    "Transactional rollback/conflict behavior and requireProfile enforcement depend on framework or unchanged code outside the packet.",
+    "Existing file-serving routes, global responsive styles and actual watermark visibility could not be verified.",
+    "Included test source describes intended checks; it is not evidence of passing execution."
+  ]
+}

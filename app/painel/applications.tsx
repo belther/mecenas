@@ -6,8 +6,12 @@ import { useMutation, useQuery } from 'convex/react';
 import type { FunctionReturnType } from 'convex/server';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
+import { formatDeadline } from '../../lib/deadline';
 import { formatBRL } from '../../lib/money';
+import { Reputation } from './reputation';
 import { Feedback, message } from './feedback';
+import { DeliveryPanel } from './deliveries';
+import { ArtistPaymentStatus, ClientPayment } from './payments';
 
 type ApplicantId = Id<'applications'>;
 type Review = FunctionReturnType<typeof api.applications.forRequest>;
@@ -18,8 +22,9 @@ type Selection = { revision: number; selected: ApplicantId[]; queue: ApplicantId
 
 const offerLabels: Record<Offer['status'], string> = {
   pending: 'Aguardando resposta',
-  accepted: 'Oferta aceita · aguardando pagamento',
+  accepted: 'Oferta aceita',
   declined: 'Oferta recusada',
+  expired: 'Oferta expirada',
 };
 
 export function ApplyButton({ requestId, applied }: { requestId: Id<'requests'>; applied: boolean }) {
@@ -75,6 +80,11 @@ export function ArtistApplications({ applications }: { applications: Application
   </section>;
 }
 
+function OfferDeadline({ offer }: { offer: Offer }) {
+  if (offer.status !== 'pending' || offer.respondBy === undefined) return null;
+  return <p>Resposta até {formatDeadline(offer.respondBy)}. Sem resposta, a vaga volta à seleção ou segue para a fila de reserva.</p>;
+}
+
 function OfferActions({ offer }: { offer: Offer }) {
   const respond = useMutation(api.applications.respond);
   const [pending, setPending] = useState<'accept' | 'decline' | null>(null);
@@ -113,10 +123,12 @@ function OfferActions({ offer }: { offer: Offer }) {
 
   return <div className="application-actions">
     <p className="application-state" role="status" tabIndex={-1} ref={result}>
-      {status === 'accepted' ? 'Oferta aceita. Aguarde a confirmação do pagamento para começar.' :
-        status === 'pending' ? 'Oferta recebida' : offerLabels.declined}
+      {status === 'accepted' ? <ArtistPaymentStatus offerId={offer.id} /> :
+        status === 'pending' ? 'Oferta recebida' : offerLabels[status]}
     </p>
+    {status === 'accepted' && <DeliveryPanel offerId={offer.id} role="artist" />}
     {status === 'pending' && <>
+      <OfferDeadline offer={offer} />
       <p>Aguarde a confirmação do pagamento para começar.</p>
       <div className="actions">
         <button type="button" disabled={pending !== null || confirmDecline} onClick={() => answer('accept')}>
@@ -238,7 +250,7 @@ function SelectionForm({ request, review, dirty }: { request: Request; review: R
     }
   }
 
-  return <form className="selection-grid" onSubmit={save}>
+  return <div className="selection-grid">
     <section aria-labelledby="applicant-list">
       <h3 id="applicant-list">Artistas inscritos</h3>
       {review.applicants.length === 0 ? <p className="hint">As candidaturas aparecem aqui assim que os artistas se inscrevem.</p> :
@@ -250,7 +262,9 @@ function SelectionForm({ request, review, dirty }: { request: Request; review: R
           return <li className="request-card" key={applicant.id}>
             <h4>{applicant.displayName}</h4>
             <p className="application-state">{status}</p>
-            {applicant.offer?.status === 'accepted' && <p className="hint">O pagamento chega em uma etapa futura da demonstração.</p>}
+            <Reputation applicationId={applicant.id} />
+            {applicant.offer && <OfferDeadline offer={applicant.offer} />}
+            {applicant.offer?.status === 'accepted' && <ClientPayment offerId={applicant.offer.id} />}
             {applicant.bio && <p className="description">{applicant.bio}</p>}
             <div className="image-strip">{applicant.images.map((url, index) => url &&
               <img key={index} src={url} width={110} height={100} loading="lazy"
@@ -280,7 +294,7 @@ function SelectionForm({ request, review, dirty }: { request: Request; review: R
           onClick={() => update({ ...board, selected: board.selected.filter(item => item !== id) })}>Retirar</button>
       </li>)}</ul> : <p className="hint">Selecione artistas na lista de candidaturas.</p>}
       <h4>Fila de reserva</h4>
-      <p className="hint">{closed ? 'A fila foi encerrada.' : 'Quando alguém recusa, a oferta segue para o primeiro artista da fila.'}</p>
+      <p className="hint">{closed ? 'A fila foi encerrada.' : 'Quando uma oferta expira ou é recusada, a oferta segue para o primeiro artista da fila.'}</p>
       {board.queue.length ? <ol className="selection-list ranked-list" role="list" ref={queueList}>
         {board.queue.map((id, index) => <li key={id}><span><span className="queue-rank" aria-hidden="true">{index + 1}.</span> {names(id)}</span>
           {!closed && <div className="actions">
@@ -301,11 +315,11 @@ function SelectionForm({ request, review, dirty }: { request: Request; review: R
           setDraft(null); setError(''); setRankUpdate('');
         }}>Carregar seleção atual</button>
       </div>}
-      {draft && !closed && !stale && <div className="application-actions">
+      {draft && !closed && !stale && <form className="application-actions" onSubmit={save}>
         {board.selected.length > 0 && <p>{board.selected.length} {board.selected.length === 1 ? 'oferta será enviada' : 'ofertas serão enviadas'} ao salvar.</p>}
         <button type="submit" disabled={blocked}>{blocked ? 'Salvando…' : 'Salvar seleção e fila'}</button>
-      </div>}
+      </form>}
       <Feedback error={stale ? '' : error} success={success} />
     </section>
-  </form>;
+  </div>;
 }

@@ -1,0 +1,53 @@
+{
+  "status": "incomplete_validation",
+  "findings": [
+    {
+      "rank": 1,
+      "severity": "medium",
+      "type": "evidence_gap",
+      "title": "Provider refund confirmation remains unverified",
+      "evidence": [
+        "browser-result.json explicitly records sandboxProviderInvoked=false.",
+        "coder-report.md reports missing payment configuration and an unverified provider-to-app refund."
+      ],
+      "expected_outcome": "A dedicated synthetic sandbox commission completes the upheld-flag path, confirms the matching full refund, retains client file restrictions, and creates no release.",
+      "assessment": "Local synthetic evidence supports the implementation, but does not establish provider integration success. This is not a demonstrated application defect."
+    },
+    {
+      "rank": 2,
+      "severity": "low",
+      "type": "coverage_gap",
+      "title": "Race and interruption coverage falls short of the designed cases",
+      "evidence": [
+        "final/tests/deliveries.test.ts.snapshot:373 establishes a hold before invoking scheduled expiry; it does not race those operations.",
+        "The competing-transition tests do not explicitly establish both commit orders.",
+        "The refund test exercises refusal and lost responses, but does not interrupt processing between claim and finish."
+      ],
+      "expected_outcome": "Both transition orders preserve one version-bound outcome. An interrupted refund run remains pending and a subsequent retry reconciles the same charge before requesting another refund.",
+      "assessment": "Static guards support these outcomes, but the supplied execution evidence does not demonstrate all of them."
+    }
+  ],
+  "rationale": {
+    "concrete_application_failures": "None established by this inspection.",
+    "static_inspection": {
+      "refunds": "Confirmation requires a canonical matching sandbox charge and REFUNDED status. Pending intent persists across failed processing, with reviewer retry available.",
+      "role_separation": "Reviewer identity is configured by auth user ID. Participant conflicts are checked for decisions and reviewer evidence access.",
+      "version_holds": "Flags bind the funded current version. Disputed state blocks revisions, submissions, manual approval and scheduled release.",
+      "settlement_exclusivity": "The ruling and state transition share a mutation. Subsequent conflicting decisions are rejected.",
+      "factual_reputation": "Counts derive from distinct funded offers and current commission records. Refunded payments retain originally-paid counts; revisions and versions do not multiply commissions."
+    },
+    "supplied_executed_evidence": {
+      "suite": "Logs report 2 Node tests and 66 Vitest tests passed.",
+      "focused": "Logs report 9 passed and 19 skipped.",
+      "browser": "Two stub-backed scenarios report passing at desktop and narrow widths.",
+      "checks": "Supplied typecheck and optimized-build logs report success."
+    }
+  },
+  "limitations": [
+    "Only restricted packet files were accessed.",
+    "No application tests were executed during this assessment; execution claims above come from supplied artifacts.",
+    "Snapshots are not a complete runnable checkout.",
+    "No account, network, collaboration, external resource or link access was used.",
+    "No exploits or bypass attempts were designed or performed."
+  ]
+}

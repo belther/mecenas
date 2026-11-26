@@ -1,0 +1,16 @@
+{
+  "role": "code-reviewer",
+  "project": "C:/Users/nabor/Documents/Workspace/Personal Projects/Mecenas",
+  "iteration": "004-illustration-delivery",
+  "inputs": {
+    "spec": "anvil/iterations/004-illustration-delivery/spec.md",
+    "diff": "local-evidence/iteration-004-implementation.diff",
+    "coder_report": "anvil/iterations/004-illustration-delivery/evidence/coder-report.md",
+    "test_baseline": "anvil/iterations/004-illustration-delivery/evidence/test-baseline.json",
+    "plan": "anvil/iterations/004-illustration-delivery/plan.md",
+    "decisions": "anvil/iterations/004-illustration-delivery/approval.md"
+  },
+  "implementation_roots": ["app", "convex", "lib"],
+  "output_location": "anvil/iterations/004-illustration-delivery/evidence/code-review-brief",
+  "assignment": { "slot": "primary", "provider": "Codex CLI (ChatGPT subscription)", "model": "gpt-6.1-sol" }
+}
