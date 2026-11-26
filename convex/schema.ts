@@ -27,6 +27,8 @@ export default defineSchema({
     exampleStorageIds: v.array(v.id("_storage")),
     exampleUploadIds: v.array(v.id("uploads")),
     status: v.union(v.literal("draft"), v.literal("open"), v.literal("closed")),
+    // Set only by the synthetic demo seed (iteration 007) so it can remove its own rows.
+    demo: v.optional(v.literal(true)),
   }).index("by_client", ["clientId"]).index("by_status", ["status"]),
   applications: defineTable({
     requestId: v.id("requests"),
@@ -61,6 +63,8 @@ export default defineSchema({
     pixCode: v.optional(v.string()),
     qrImage: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
+    // A seeded demo payment: no provider charge exists and no provider call is made.
+    demo: v.optional(v.literal(true)),
   }).index("by_offer", ["offerId"]).index("by_offer_phase", ["offerId", "phase"])
     .index("by_reference", ["reference"]).index("by_provider", ["providerId"]),
   paymentEvents: defineTable({

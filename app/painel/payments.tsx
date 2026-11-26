@@ -12,10 +12,12 @@ const formatExpiry = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo',
 });
 
+export const DEMO_PAYMENT = 'Pagamento de demonstração — sem cobrança no provedor.';
+
 export function ArtistPaymentStatus({ offerId }: { offerId: Id<'offers'> }) {
   const payment = useQuery(api.payments.view, { offerId });
   return <>{payment?.phase === 'funded'
-    ? 'Pagamento de teste confirmado.'
+    ? 'demo' in payment ? DEMO_PAYMENT : 'Pagamento de teste confirmado.'
     : 'Oferta aceita. Aguarde a confirmação do pagamento para começar.'}</>;
 }
 
@@ -52,7 +54,7 @@ export function ClientPayment({ offerId }: { offerId: Id<'offers'> }) {
 
   if (!payment) return <p role="status">Consultando pagamento…</p>;
   if (payment.phase === 'funded') return <>
-    <p className="application-state" role="status">Pagamento de teste confirmado</p>
+    <p className="application-state" role="status">{'demo' in payment ? DEMO_PAYMENT : 'Pagamento de teste confirmado'}</p>
     <DeliveryPanel offerId={offerId} role="client" />
   </>;
 

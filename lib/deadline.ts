@@ -1,5 +1,5 @@
 const brasilia = new Intl.DateTimeFormat('pt-BR', {
-  timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'medium',
+  timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short',
 });
 
 export function formatDeadline(instant: number) {

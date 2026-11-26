@@ -14,7 +14,7 @@ export const mine = query({
     const { payment, profile } = await deliveryAccess(ctx, offerId);
     const delivery = payment && await currentDelivery(ctx, offerId);
     if (!delivery) return {
-      phase: payment ? 'ready' as const : 'awaitingPayment' as const,
+      phase: payment ? 'ready' as const : 'awaitingPayment' as const, demoPayment: payment?.demo === true,
       version: 0, revisions: [], processCount: 0, licence: DELIVERY_LICENCE,
     };
     const dispute = await disputeFor(ctx, offerId);
@@ -22,6 +22,7 @@ export const mine = query({
     const release = delivery.phase === 'approved' ? await deliveryRelease(ctx, offerId) : null;
     return {
       phase: delivery.phase,
+      demoPayment: payment.demo === true,
       version: delivery.version,
       revisions: delivery.revisions,
       reviewBy: delivery.reviewBy,

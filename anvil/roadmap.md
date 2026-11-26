@@ -11,7 +11,7 @@ See [product](product.md) for scope and durable decisions and [SPEC Â§10](../S
 | [004](iterations/004-illustration-delivery/review.html) | Watermarked preview, process images, two revisions, approval, simulated release, full download and licence (R6/R7/R10). | Implemented and verified locally, 2026-11-23. [Anvil AC10 result](iterations/004-illustration-delivery/evidence/ac10-record.md). |
 | [005](iterations/005-offer-review-deadlines/review.html) | 24-hour offer expiry and 72-hour automatic approval of the current eligible delivery version (R3/R8). | [Verified locally](iterations/005-offer-review-deadlines/evidence/verification.md) and [reviewed](iterations/005-offer-review-deadlines/evidence/recheck.json), 2026-11-24. Hosted rollout pending. |
 | [006](iterations/006-disputes-refunds-reputation/review.html) | AI flag, platform review, sandbox refund and factual reputation (R9/Â§4). | [Implemented and verified locally](iterations/006-disputes-refunds-reputation/evidence/verification.md). Actual sandbox refund pending development payment configuration. |
-| 007 | Synthetic demo data and end-to-end fixes; optional blind ratings only if time permits. | Planned. |
+| [007](iterations/007-demo-data-walkthrough/spec.md) | Synthetic demo data and end-to-end fixes; blind ratings deferred. | [Implemented and verified locally](iterations/007-demo-data-walkthrough/verification.md), 2026-11-25. Seeded on Convex development only. |
 | 008 | Interface polish, final demonstration video and reproducible setup documentation. | Planned. |
 | 009 | Submission checks, buffer and final delivery before the freeze. | Planned. |
 

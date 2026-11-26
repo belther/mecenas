@@ -16,9 +16,9 @@ drafts, publication and artist browsing. It was verified locally against the
 2026-11-21: https://mecenas-azure.vercel.app/painel . Production health, public
 page access and anonymous-denial checks pass. Registration is closed. One private
 synthetic production login was verified on 2026-11-24. See the original
-[release evidence](docs/deployment-001.md). The working tree also contains offers,
-test payments, versioned deliveries, deadlines, human dispute review and reputation.
-The public site still serves iteration 001.
+[release evidence](docs/deployment-001.md). The repository also contains offers,
+test payments, versioned deliveries, deadlines, human dispute review, reputation
+and a reproducible synthetic demo seed. The public site still serves iteration 001.
 Without a Convex URL the page explicitly shows local demo mode.
 First public page: https://mecenas-azure.vercel.app (verified 2026-11-20).
 Convex dev and production health queries are connected. The sandbox probe
@@ -110,6 +110,34 @@ case unlocks the approved original and licence and records a simulated release.
 For provider verification, use the [development payment setup](docs/briefs/2026-11-23-iteration-003-handoff.txt)
 and a sandbox key with refund permission. The app also accepts the signed
 `transparent.refunded` event on its existing development webhook.
+
+### Synthetic demo data (iteration 007)
+
+After `npm run convex:dev` has configured a **development** deployment, run:
+
+```powershell
+npm run demo:seed
+```
+
+It creates five fictional accounts (`demo-cliente`, `demo-artista-iara`,
+`demo-artista-tomas`, `demo-artista-bento`, `demo-revisor`) and six commissions,
+one for each demo step: open for selection, pending offer with a backup queue,
+accepted and waiting for Pix, delivered for review, approved with downloads and
+licence, and disputed for platform review. Run it again to restore the same
+starting state; it replaces only the commissions it created.
+
+- The seed runs as internal Convex functions, so only a deployment administrator
+  can run it. Public registration stays closed.
+- The shared password is read from `MECENAS_DEMO_PASSWORD`, or from the ignored
+  file `.env.demo`, which the first run creates with a random value. It is never printed.
+- The script refuses any deployment that is not `dev:` or `local:`.
+- To open **Revisão da plataforma** as `demo-revisor`, set
+  `MECENAS_REVIEWER_USER_ID` to the ID that the script prints.
+- **Seeded payments are not payments.** No AbacatePay charge exists for them. The
+  app labels them "Pagamento de demonstração — sem cobrança no provedor" and never
+  calls the provider for them. An upheld dispute on a seeded payment ends as a
+  labelled demo refund. The commission waiting for Pix uses the real sandbox flow
+  once payment settings exist.
 
 ## Vercel + Convex production
 

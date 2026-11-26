@@ -52,7 +52,8 @@ export const receive = internalAction({
     if (!event) return 400;
     const { providerId, reference, amountCents, eventId } = event;
     const attempt = await ctx.runQuery(internal.payments.forEvent, { providerId, reference });
-    if (!attempt || attempt.amountCents !== amountCents || (attempt.providerId && attempt.providerId !== providerId)) return 204;
+    // Seeded demo payments have no provider charge: never look them up at the provider.
+    if (!attempt || attempt.demo || attempt.amountCents !== amountCents || (attempt.providerId && attempt.providerId !== providerId)) return 204;
     try {
       const status = await settlementStatus(testKey(), { ...attempt, providerId });
       if (status === 'REFUNDED' && attempt.phase === 'funded' && attempt.providerId === providerId) {

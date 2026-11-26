@@ -37,7 +37,7 @@ export function DeliveryPanel({ offerId, role }: Offer & { role: 'artist' | 'cli
     </ul>}
     {delivery.dispute && <div className="panel">
       <p role="status"><strong>{{ open: 'Contestação em análise pela plataforma.', dismissed: 'Contestação não acolhida.',
-        refundPending: 'Contestação acolhida. Reembolso pendente.', refunded: 'Reembolso de teste confirmado.' }[delivery.dispute.status]}</strong></p>
+        refundPending: 'Contestação acolhida. Reembolso pendente.', refunded: delivery.demoPayment ? 'Contestação acolhida. Reembolso de demonstração — sem provedor.' : 'Reembolso de teste confirmado.' }[delivery.dispute.status]}</strong></p>
       <p>Motivo informado: {delivery.dispute.reason}</p>
       {delivery.dispute.decisionNote && <p>Decisão da plataforma: {delivery.dispute.decisionNote}</p>}
     </div>}

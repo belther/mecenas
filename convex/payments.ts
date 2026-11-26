@@ -38,11 +38,14 @@ export const view = query({
   handler: async (ctx, { offerId }) => {
     const { profile } = await access(ctx, offerId);
     const paid = await funded(ctx, offerId);
-    if (profile.role === 'artist') return paid ? { phase: 'funded' as const } : { phase: 'awaitingPayment' as const };
+    // `demo` appears only on seeded demo payments, so real payment views keep their exact shape.
+    const demo = paid?.demo ? { demo: true as const } : {};
+    if (profile.role === 'artist') return paid ? { phase: 'funded' as const, ...demo } : { phase: 'awaitingPayment' as const };
     const identity = await ctx.db.query('paymentIdentities').withIndex('by_client', q => q.eq('clientId', profile._id)).unique();
     const attempt = paid ?? await latest(ctx, offerId);
     return {
       phase: attempt?.phase ?? 'awaitingPayment' as const,
+      ...demo,
       requiresCpf: !identity,
       expiresAt: attempt?.phase === 'awaitingPix' ? attempt.expiresAt : undefined,
       pixCode: attempt?.phase === 'awaitingPix' ? attempt.pixCode : undefined,
@@ -107,7 +110,7 @@ export const observe = internalMutation({
   args: { attemptId: v.id('paymentAttempts'), charge, eventId: v.optional(v.string()) },
   handler: async (ctx, { attemptId, charge, eventId }) => {
     const attempt = await ctx.db.get(attemptId);
-    if (!attempt || attempt.amountCents !== charge.amountCents ||
+    if (!attempt || attempt.demo || attempt.amountCents !== charge.amountCents ||
       (attempt.providerId && attempt.providerId !== charge.providerId)) return false;
     const binding = await ctx.db.query('paymentAttempts').withIndex('by_provider', q => q.eq('providerId', charge.providerId)).unique();
     if (binding && binding._id !== attemptId) return false;

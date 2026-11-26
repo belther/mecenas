@@ -27,3 +27,21 @@ describe('T13/T14/T15 actual image decode', () => {
     await expect(normalizeImage(bytes(png), 'image/svg+xml')).rejects.toThrow();
   });
 });
+describe('007 font-free watermark', () => {
+  test('draws the preview label with vector strokes, not font text', async () => {
+    const { vectorText, deliveryPreview } = await import('../lib/image-validation');
+    const svg = vectorText('MECENAS · PRÉVIA', 60);
+    expect(svg).not.toContain('<text');
+    expect(svg.match(/<path /g)).toHaveLength(14);
+    expect(() => vectorText('Ç', 10)).toThrow();
+    const white = await sharp({ create: { width: 800, height: 600, channels: 3, background: '#ffffff' } }).png().toBuffer();
+    const { data, info } = await sharp(await deliveryPreview(bytes(white), 'image/png')).raw().toBuffer({ resolveWithObject: true });
+    // The centre band holds the dark label; light stroke pixels must appear inside it.
+    let light = 0;
+    for (let x = info.width * 0.3; x < info.width * 0.7; x++) {
+      const i = (Math.floor(info.height / 2) * info.width + Math.floor(x)) * info.channels;
+      if (data[i] > 200 && data[i + 1] > 200 && data[i + 2] > 200) light++;
+    }
+    expect(light).toBeGreaterThan(3);
+  });
+});

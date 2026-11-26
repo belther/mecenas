@@ -129,7 +129,7 @@ function OfferActions({ offer }: { offer: Offer }) {
     {status === 'accepted' && <DeliveryPanel offerId={offer.id} role="artist" />}
     {status === 'pending' && <>
       <OfferDeadline offer={offer} />
-      <p>Aguarde a confirmação do pagamento para começar.</p>
+      <p>Ao aceitar, o cliente paga o Pix de teste. Comece a desenhar só depois da confirmação do pagamento.</p>
       <div className="actions">
         <button type="button" disabled={pending !== null || confirmDecline} onClick={() => answer('accept')}>
           {pending === 'accept' ? 'Aceitando…' : 'Aceitar oferta'}

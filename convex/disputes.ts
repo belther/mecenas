@@ -65,11 +65,13 @@ export const decide = mutation({
       fail('A entrega ou o pagamento mudou.');
     }
     const upheld = outcome === 'uphold';
+    // A seeded demo payment has no provider charge, so its refund is a labelled demo refund.
+    const demo = payment.demo === true;
     await ctx.db.patch(caseId, { reviewer, decidedAt: Date.now(), decisionNote: text(note, 1, 1000, 'Justificativa'),
-      status: upheld ? 'refundPending' : 'dismissed' });
+      status: upheld ? (demo ? 'refunded' : 'refundPending') : 'dismissed' });
     if (upheld) {
       await ctx.db.patch(delivery._id, { phase: 'rejected' });
-      await scheduleRefund(ctx, record);
+      if (!demo) await scheduleRefund(ctx, record);
     } else {
       await release(ctx, delivery, payment, 'dismissed');
     }
@@ -96,7 +98,7 @@ export const claim = internalMutation({
     const record = await ctx.db.get(caseId);
     if (record?.status !== 'refundPending' || record.refundRun !== run || record.startedRun === run) return null;
     const payment = await fundedPayment(ctx, await ctx.db.get(record.offerId));
-    if (payment?._id !== record.paymentAttemptId || !payment.providerId) return null;
+    if (payment?._id !== record.paymentAttemptId || !payment.providerId || payment.demo) return null;
     await ctx.db.patch(caseId, { startedRun: run });
     return payment;
   },

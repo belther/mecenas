@@ -155,6 +155,17 @@ Sanitized results are recorded with the [iteration 003 verification](anvil/itera
 
 The conductor checked configuration names on Convex development. Only `MECENAS_DEMO_USERNAMES` was present. The five sandbox payment variables were absent. Delivery of a real provider notification to the app has not been demonstrated. No dedicated iteration 006 charge or provider refund was attempted. The local refund path was tested with synthetic provider responses. The outstanding check requires an app-created, webhook-funded test commission, an independent reviewer's upheld decision and a matching full refund confirmed by AbacatePay. [Development payment setup](docs/briefs/2026-11-23-iteration-003-handoff.txt).
 
+### Payment setup check — 2026-11-25 (Brasília)
+
+The configuration names on Convex development were checked again (names only).
+Only `MECENAS_DEMO_USERNAMES` was present; iteration 007 then added
+`MECENAS_REVIEWER_USER_ID` for the demo reviewer. The five sandbox payment
+variables are still absent, so the provider-webhook check (003) and the approved
+dedicated sandbox refund check (006) were not attempted. Iteration 007 demo data
+contains **demo payments**: records marked `demo: true`, with no provider charge,
+labelled in the app and never sent to AbacatePay. They are not evidence of
+any payment, escrow or refund behaviour.
+
 ## 7. Out of scope (hackathon)
 
 Music, physical art, chat, cards/boleto, mobile app, more than one currency, automatic AI detection.

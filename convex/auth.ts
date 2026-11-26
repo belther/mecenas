@@ -26,3 +26,10 @@ export const signUpWithUsernamePassword = mutation({
     return signupHandler(ctx, args);
   },
 });
+// Iteration 007: lets the administrator-only demo seed create its synthetic accounts
+// through the same password implementation, without opening public registration.
+export async function createDemoAccount(ctx: MutationCtx, username: string, password: string): Promise<string> {
+  const result = await signupHandler(ctx, { username, password });
+  if (result.status !== 'complete') throw new ConvexError(`Conta de demonstração recusada: ${result.userError.error}`);
+  return result.tokens.userId;
+}
